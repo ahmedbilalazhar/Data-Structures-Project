@@ -36,6 +36,7 @@ void RoutineQueue::enqueue(int id, int zone, float value) {
 	}
 	size = size + 1;
 	cout << "  [Q1] Task " << id << " added -> Zone:" << zone << " Value:" << value << endl;
+    cout << endl;
 }
 
 // O(1) - remove and process the oldest routine task
@@ -52,6 +53,7 @@ void RoutineQueue::dequeue() {
 	}
 	delete temp;
 	size = size - 1;
+    cout << endl;
 }
 
 // O(n) - print all tasks currently in routine queue
@@ -66,6 +68,7 @@ void RoutineQueue::display() {
 		cout << "    Task:" << cur->taskId << " Zone:" << cur->zone << " Value:" << cur->value << endl;
 		cur = cur->next;
 	}
+    cout << endl;
 }
 
 // O(1) - return true if no tasks pending
@@ -120,6 +123,7 @@ void SurveillanceQueue::enqueue(int id, int zone, float value) {
 	}
 	size = size + 1;
 	cout << "  [Q2] Surveillance Task " << id << " added -> Zone:" << zone << " Value:" << value << endl;
+    cout << endl;
 }
 
 // O(1) - process and remove oldest surveillance update
@@ -136,6 +140,7 @@ void SurveillanceQueue::dequeue() {
 	}
 	delete temp;
 	size = size - 1;
+    cout << endl;
 }
 
 // O(n) - print all surveillance tasks in queue
@@ -150,6 +155,7 @@ void SurveillanceQueue::display() {
 		cout << "    Task:" << cur->taskId << " Zone:" << cur->zone << " Value:" << cur->value << endl;
 		cur = cur->next;
 	}
+    cout << endl;
 }
 
 // O(1) - check if surveillance queue is empty
@@ -208,6 +214,7 @@ void EmergencyQueue::enqueue(int id, int zone, float value, int priority) {
 	}
 	size = size + 1;
 	cout << "  [Q3] Emergency Task " << id << " inserted -> Zone:" << zone << " Priority:" << priority << endl;
+    cout << endl;
 }
 
 // O(1) - process highest priority emergency task first
@@ -221,6 +228,7 @@ void EmergencyQueue::dequeue() {
 	front = front->next;
 	delete temp;
 	size = size - 1;
+    cout << endl;
 }
 
 // O(n) - show all emergency tasks in priority order
@@ -235,6 +243,7 @@ void EmergencyQueue::display() {
 		cout << "    Task:" << cur->taskId << " Zone:" << cur->zone << " Priority:" << cur->priority << " Value:" << cur->value << endl;
 		cur = cur->next;
 	}
+    cout << endl;
 }
 
 // O(1) - check if no emergency tasks are pending
@@ -288,6 +297,7 @@ void DecisionQueue::enqueue(int id, int zone, float value, int priority) {
 	}
 	size = size + 1;
 	cout << "  [Q4] Decision Task " << id << " added -> Zone:" << zone << " Value:" << value << endl;
+    cout << endl;
 }
 
 // O(1) - remove front decision task after processing
@@ -304,6 +314,7 @@ void DecisionQueue::dequeue() {
 	}
 	delete temp;
 	size = size - 1;
+    cout << endl;
 }
 
 // O(n) - find task by id and mark it as paused
@@ -313,11 +324,13 @@ void DecisionQueue::pauseTask(int taskId) {
 		if (cur->taskId == taskId) {
 			cur->paused = true;
 			cout << "  [Q4] Task " << taskId << " paused." << endl;
+            cout << endl;
 			return;
 		}
 		cur = cur->next;
 	}
 	cout << "  [Q4] Task " << taskId << " not found." << endl;
+    cout << endl;
 }
 
 // O(n) - find task by id and clear paused flag
@@ -327,11 +340,13 @@ void DecisionQueue::resumeTask(int taskId) {
 		if (cur->taskId == taskId) {
 			cur->paused = false;
 			cout << "  [Q4] Task " << taskId << " resumed." << endl;
+            cout << endl;
 			return;
 		}
 		cur = cur->next;
 	}
 	cout << "  [Q4] Task " << taskId << " not found." << endl;
+    cout << endl;
 }
 
 // O(n) - execute all tasks that are not paused
@@ -350,6 +365,7 @@ void DecisionQueue::processAll() {
 		}
 		cur = cur->next;
 	}
+    cout << endl;
 }
 
 // O(n) - show all tasks with their current paused status
@@ -371,6 +387,7 @@ void DecisionQueue::display() {
 		cout << endl;
 		cur = cur->next;
 	}
+    cout << endl;
 }
 
 // O(1) - return true if no decision tasks pending

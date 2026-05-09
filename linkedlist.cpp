@@ -48,6 +48,7 @@ void SinglyList::display() {
 		cout << "  [Time:" << cur->time << " Zone:" << cur->zone << " Value:" << cur->value << "]" << endl;
 		cur = cur->next;
 	}
+    cout << endl;
 }
 
 // O(1) - check if list has no nodes
@@ -124,6 +125,7 @@ bool SinglyList::removeNoise(float delta) {
 			cur = cur->next;
 		}
 	}
+    cout << endl;
 	return removed;
 }
 
@@ -149,6 +151,7 @@ void SinglyList::filterAnomalies(float normal, float theta) {
 	if (count == 0) {
 		cout << "  No anomalies found." << endl;
 	}
+    cout << endl;
 }
 
 // ============================
@@ -203,6 +206,7 @@ void DoublyList::displayForward() {
 		cur = cur->next;
 	}
 	cout << "NULL" << endl;
+    cout << endl;
 }
 
 // O(n) - show events from tail to head (backward correction review)
@@ -217,6 +221,7 @@ void DoublyList::displayBackward() {
 		cur = cur->prev;
 	}
 	cout << "NULL" << endl;
+    cout << endl;
 }
 
 // O(n) - update all events after given time to new value (forward correction chain L4)
@@ -231,6 +236,7 @@ void DoublyList::correctForward(int fromTime, float newVal) {
 		cur = cur->next;
 	}
 	cout << "  Forward correction applied to " << corrected << " events." << endl;
+    cout << endl;
 }
 
 // O(n) - update all events before given time to new value (backward correction chain L5)
@@ -245,6 +251,7 @@ void DoublyList::correctBackward(int fromTime, float newVal) {
 		cur = cur->prev;
 	}
 	cout << "  Backward correction applied to " << corrected << " events." << endl;
+    cout << endl;
 }
 
 // O(n) - set all node values to global value for consistency (sync chain L6)
@@ -255,6 +262,7 @@ void DoublyList::synchronize(float globalVal) {
 		cur = cur->next;
 	}
 	cout << "  All nodes synchronized to value: " << globalVal << endl;
+    cout << endl;
 }
 
 // O(1) - return tail pointer for external access

@@ -1,7 +1,7 @@
 // menu.cpp
 #include "menu.h"
 
-// O(1) — reads a valid int within [lo, hi] from cin, retries on bad input or out-of-range
+// O(1) - reads a valid int within [lo, hi] from cin, retries on bad input or out-of-range
 static int readInt(const char* prompt, int lo, int hi) {
 	int val;
 	while (true) {
@@ -16,7 +16,7 @@ static int readInt(const char* prompt, int lo, int hi) {
 	}
 }
 
-// O(1) — reads a valid float from cin, retries on bad input
+// O(1) - reads a valid float from cin, retries on bad input
 static float readFloat(const char* prompt) {
 	float val;
 	while (true) {
@@ -31,7 +31,7 @@ static float readFloat(const char* prompt) {
 	}
 }
 
-// O(1) — sets up graph edges and builds all default trees
+// O(1) - sets up graph edges and builds all default trees
 Menu::Menu() : listGraph(10), matGraph(10), h1(20), h2(10), h3(10) {
 	taskCounter = 1;
 	eventCounter = 1;
@@ -53,7 +53,67 @@ Menu::Menu() : listGraph(10), matGraph(10), h1(20), h2(10), h3(10) {
 	matGraph.addEdge(4, 5, 2.0);
 }
 
-// Menu 1 — Environmental Data Acquisition and Structuring
+// [Test] Environmental - adds readings, checks baseline, filters noise, scans terrain
+void Menu::testEnvironmental() {
+    cout << endl;
+	cout << "[Test] Environmental Data" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Setting baseline for zones 0, 1, 2..." << endl;
+	base.set(0, 25.0f, 60.0f, 0.0f);
+	base.set(1, 26.0f, 58.0f, 0.0f);
+	base.set(2, 24.0f, 62.0f, 0.0f);
+
+	cout << endl;
+	cout << "-> Adding 3 sensor readings (normal, critical, normal)..." << endl;
+	stream.add(27.0f, 10.0f, 55.0f);
+	stream.add(48.0f, 80.0f, 15.0f);
+	stream.add(22.0f, 5.0f, 65.0f);
+
+	cout << endl;
+	cout << "-> Sensor stream contents:" << endl;
+	stream.show();
+
+	cout << endl;
+	cout << "-> Baseline table:" << endl;
+	base.show();
+
+	cout << endl;
+	cout << "-> Anomaly check (temp>45, smoke>70, humid<20):" << endl;
+	stream.checkAnomalies(45.0f, 70.0f, 20.0f);
+
+	cout << endl;
+	cout << "-> Inserting raw events for noise filter test..." << endl;
+	rawList.insert(25.0f, 1, 0);
+	rawList.insert(26.0f, 2, 0);
+	rawList.insert(90.0f, 3, 0);
+	rawList.insert(27.0f, 4, 0);
+
+	cout << endl;
+	cout << "-> Noise filter with delta=30.0:" << endl;
+	bool removed = rawList.removeNoise(30.0f);
+	if (removed == false) {
+		cout << "  No noise detected." << endl;
+	}
+
+	cout << endl;
+	cout << "-> Setting grid cell (2,2) to temp=50, smoke=85..." << endl;
+	grid.setCell(2, 2, 50.0f, 85.0f);
+	grid.setCell(0, 0, 25.0f, 5.0f);
+	grid.setCell(4, 4, 30.0f, 10.0f);
+
+	cout << endl;
+	cout << "-> Updating terrain cell (1,1) with high risk values..." << endl;
+	terrain.update(1, 1, 0.8f, 15.0f, 0.9f);
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 1 - Environmental Data Acquisition and Structuring
 void Menu::menuEnvironmental() {
 	int choice;
 	int again = 1;
@@ -70,8 +130,9 @@ void Menu::menuEnvironmental() {
 		cout << "  8.  Show forest grid" << endl;
 		cout << "  9.  Update terrain cell" << endl;
 		cout << "  10. Show terrain grid" << endl;
+		cout << "  11. Run test sequence" << endl;
 		cout << "  0.  Back" << endl;
-		choice = readInt("Select (0-10): ", 0, 10);
+		choice = readInt("Select (0-11): ", 0, 11);
 
 		if (choice == 1) {
 			float t = readFloat("  Temperature (C): ");
@@ -125,13 +186,59 @@ void Menu::menuEnvironmental() {
 		else if (choice == 10) {
 			terrain.show();
 		}
+		else if (choice == 11) {
+			testEnvironmental();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 2 — Forest Grid Status and Spatial Analysis
+// [Test] Forest Grid - fills grid, interpolates missing cell, detects boundaries
+void Menu::testForestGrid() {
+    cout << endl;
+	cout << "[Test] Forest Grid Status" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Populating grid with temperature and smoke values..." << endl;
+	grid.setCell(0, 0, 25.0f, 5.0f);
+	grid.setCell(0, 1, 27.0f, 6.0f);
+	grid.setCell(0, 3, 60.0f, 70.0f);
+	grid.setCell(0, 4, 28.0f, 8.0f);
+	grid.setCell(1, 0, 26.0f, 5.0f);
+	grid.setCell(1, 2, 26.0f, 5.0f);
+	grid.setCell(2, 2, 27.0f, 6.0f);
+
+	cout << endl;
+	cout << "-> Cell (0,2) is missing. Interpolating from neighbors..." << endl;
+	grid.interpolate(0, 2);
+
+	cout << endl;
+	cout << "-> Grid after interpolation:" << endl;
+	grid.show();
+
+	cout << endl;
+	cout << "-> Running boundary detection..." << endl;
+	grid.findBoundaries();
+
+	cout << endl;
+	cout << "-> Terrain: setting one high-risk cell and one safe cell..." << endl;
+	terrain.update(0, 0, 0.9f, 12.0f, 0.85f);
+	terrain.update(2, 2, 0.3f, 55.0f, 0.2f);
+
+	cout << endl;
+	cout << "-> Terrain anomaly scan:" << endl;
+	terrain.filterAnomalies();
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 2 - Forest Grid Status and Spatial Analysis
 void Menu::menuForestGrid() {
 	int choice;
 	int again = 1;
@@ -144,8 +251,9 @@ void Menu::menuForestGrid() {
 		cout << "  4. Detect sharp temperature boundaries" << endl;
 		cout << "  5. Show terrain conditions" << endl;
 		cout << "  6. Scan terrain for anomalies" << endl;
+		cout << "  7. Run test sequence" << endl;
 		cout << "  0. Back" << endl;
-		choice = readInt("Select (0-6): ", 0, 6);
+		choice = readInt("Select (0-7): ", 0, 7);
 
 		if (choice == 1) {
 			stream.show();
@@ -167,13 +275,72 @@ void Menu::menuForestGrid() {
 		else if (choice == 6) {
 			terrain.filterAnomalies();
 		}
+		else if (choice == 7) {
+			testForestGrid();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 3 — Event Memory and Temporal Reconstruction
+// [Test] Event Memory - stores events, traverses both directions, corrects, monitors loop
+void Menu::testEventMemory() {
+    cout << endl;
+	cout << "[Test] Event Memory System" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Inserting 4 events into singly, doubly, and circular lists..." << endl;
+	rawList.insert(25.0f, 10, 1);
+	rawList.insert(30.0f, 20, 2);
+	rawList.insert(55.0f, 30, 3);
+	rawList.insert(28.0f, 40, 4);
+
+	corrList.insertBack(25.0f, 10, 1);
+	corrList.insertBack(30.0f, 20, 2);
+	corrList.insertBack(55.0f, 30, 3);
+	corrList.insertBack(28.0f, 40, 4);
+
+	loopList.insert(25.0f, 10, 1);
+	loopList.insert(30.0f, 20, 2);
+	loopList.insert(55.0f, 30, 3);
+
+	cout << endl;
+	cout << "-> Forward traversal (singly list):" << endl;
+	rawList.display();
+
+	cout << endl;
+	cout << "-> Backward traversal (doubly list):" << endl;
+	corrList.displayBackward();
+
+	cout << endl;
+	cout << "-> Anomaly filter on singly list (normal=27, theta=10):" << endl;
+	rawList.filterAnomalies(27.0f, 10.0f);
+
+	cout << endl;
+	cout << "-> Forward correction from time=20, new value=29.0..." << endl;
+	corrList.correctForward(20, 29.0f);
+
+	cout << endl;
+	cout << "-> Doubly list after correction (forward view):" << endl;
+	corrList.displayForward();
+
+	cout << endl;
+	cout << "-> Circular emergency scan (threshold=28.0, 2 rounds):" << endl;
+	loopList.monitorEmergency(28.0f, 2);
+
+	cout << endl;
+	cout << "-> Stability scan (epsilon=6.0, 1 round):" << endl;
+	loopList.monitorStability(6.0f, 1);
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 3 - Event Memory and Temporal Reconstruction
 void Menu::menuEventMemory() {
 	int choice;
 	int again = 1;
@@ -190,8 +357,9 @@ void Menu::menuEventMemory() {
 		cout << "  8.  Forward correction (doubly list)" << endl;
 		cout << "  9.  Backward correction / restore state" << endl;
 		cout << "  10. Synchronize all doubly list events" << endl;
+		cout << "  11. Run test sequence" << endl;
 		cout << "  0.  Back" << endl;
-		choice = readInt("Select (0-10): ", 0, 10);
+		choice = readInt("Select (0-11): ", 0, 11);
 
 		if (choice == 1) {
 			float v = readFloat("  Value: ");
@@ -247,13 +415,71 @@ void Menu::menuEventMemory() {
 			corrList.synchronize(gval);
 			corrList.displayForward();
 		}
+		else if (choice == 11) {
+			testEventMemory();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 4 — Fire Detection and Control
+// [Test] Fire Detection - score, alert queue enqueue/dequeue, BFS spread, resource check
+void Menu::testFireDetection() {
+    cout << endl;
+	cout << "[Test] Fire Detection and Control" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Computing weighted risk score (fire=0.9, smoke=0.8, temp=0.75)..." << endl;
+	float score = dtree.computeScore(0.9f, 0.8f, 0.75f);
+
+	cout << endl;
+	cout << "-> Local zone decision on computed score..." << endl;
+	dtree.localDecision(score);
+
+	cout << endl;
+	cout << "-> Enqueueing 3 emergency alerts (zones 3, 4, 6 by priority)..." << endl;
+	eq.enqueue(taskCounter, 3, 75.0f, 1);
+	taskCounter = taskCounter + 1;
+	eq.enqueue(taskCounter, 4, 60.0f, 2);
+	taskCounter = taskCounter + 1;
+	eq.enqueue(taskCounter, 6, 45.0f, 3);
+	taskCounter = taskCounter + 1;
+
+	cout << endl;
+	cout << "-> Emergency queue state:" << endl;
+	eq.display();
+
+	cout << endl;
+	cout << "-> Dequeuing highest priority task..." << endl;
+	eq.dequeue();
+
+	cout << endl;
+	cout << "-> Setting fire levels and running BFS from Zone 3..." << endl;
+	listGraph.setFireLevel(3, 0.9);
+	listGraph.setFireLevel(4, 0.6);
+	listGraph.bfsFireSpread(3);
+
+	cout << endl;
+	cout << "-> Water availability check (60L available, 100L required)..." << endl;
+	rtree.checkWaterAvailability(60.0f, 100.0f);
+
+	cout << endl;
+	cout << "-> Equipment priority score (risk=0.9, impact=0.8)..." << endl;
+	rtree.computePriority(0.9f, 0.8f);
+
+	cout << endl;
+	cout << "-> Fire level formula (alpha=0.4, temp=75, beta=0.3, smoke=85)..." << endl;
+	itree.computeFireLevel(0.4f, 75.0f, 0.3f, 85.0f);
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 4 - Fire Detection and Control
 void Menu::menuFireDetection() {
 	int choice;
 	int again = 1;
@@ -267,8 +493,9 @@ void Menu::menuFireDetection() {
 		cout << "  5. Allocate firefighting resources" << endl;
 		cout << "  6. Set zone fire level in graph" << endl;
 		cout << "  7. Compute incident fire level (formula)" << endl;
+		cout << "  8. Run test sequence" << endl;
 		cout << "  0. Back" << endl;
-		choice = readInt("Select (0-7): ", 0, 7);
+		choice = readInt("Select (0-8): ", 0, 8);
 
 		if (choice == 1) {
 			cout << "  Score = 0.4*fire + 0.3*smoke + 0.3*temp" << endl;
@@ -316,13 +543,90 @@ void Menu::menuFireDetection() {
 			float smoke = readFloat("  Smoke level: ");
 			itree.computeFireLevel(alpha, temp, beta, smoke);
 		}
+		else if (choice == 8) {
+			testFireDetection();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 5 — Task Scheduling and Priority Allocation
+// [Test] Task Scheduling - fills all four queues, pauses tasks, processes, resumes
+void Menu::testTaskScheduling() {
+    cout << endl;
+	cout << "[Test] Task Scheduling System" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Adding 3 routine tasks to Q1..." << endl;
+	rq.enqueue(taskCounter, 1, 22.0f);
+	taskCounter = taskCounter + 1;
+	rq.enqueue(taskCounter, 2, 24.0f);
+	taskCounter = taskCounter + 1;
+	rq.enqueue(taskCounter, 3, 23.0f);
+	taskCounter = taskCounter + 1;
+
+	cout << endl;
+	cout << "-> Adding 2 surveillance tasks to Q2..." << endl;
+	sq.enqueue(taskCounter, 4, 35.0f);
+	taskCounter = taskCounter + 1;
+	sq.enqueue(taskCounter, 5, 38.0f);
+	taskCounter = taskCounter + 1;
+
+	cout << endl;
+	cout << "-> Adding 3 emergency tasks to Q3 (priority-sorted)..." << endl;
+	eq.enqueue(taskCounter, 6, 80.0f, 1);
+	taskCounter = taskCounter + 1;
+	eq.enqueue(taskCounter, 7, 60.0f, 3);
+	taskCounter = taskCounter + 1;
+	eq.enqueue(taskCounter, 8, 70.0f, 2);
+	taskCounter = taskCounter + 1;
+
+	cout << endl;
+	cout << "-> Adding 3 decision tasks to Q4..." << endl;
+	int pauseId = taskCounter;
+	dq.enqueue(taskCounter, 1, 25.0f, 3);
+	taskCounter = taskCounter + 1;
+	dq.enqueue(taskCounter, 2, 80.0f, 1);
+	taskCounter = taskCounter + 1;
+	dq.enqueue(taskCounter, 3, 26.0f, 3);
+	taskCounter = taskCounter + 1;
+
+	cout << endl;
+	cout << "-> All queues before processing:" << endl;
+	rq.display();
+	sq.display();
+	eq.display();
+	dq.display();
+
+	cout << endl;
+	cout << "-> Processing one task from each queue..." << endl;
+	eq.dequeue();
+	rq.dequeue();
+	sq.dequeue();
+	dq.dequeue();
+
+	cout << endl;
+	cout << "-> Pausing first decision task (id=" << pauseId << ")..." << endl;
+	dq.pauseTask(pauseId);
+
+	cout << endl;
+	cout << "-> Running all non-paused decision tasks..." << endl;
+	dq.processAll();
+
+	cout << endl;
+	cout << "-> Resuming paused task and running again..." << endl;
+	dq.resumeTask(pauseId);
+	dq.processAll();
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 5 - Task Scheduling and Priority Allocation
 void Menu::menuTaskScheduling() {
 	int choice;
 	int again = 1;
@@ -338,8 +642,9 @@ void Menu::menuTaskScheduling() {
 		cout << "  7. Pause a decision task" << endl;
 		cout << "  8. Resume a decision task" << endl;
 		cout << "  9. View all queues" << endl;
-		cout << "  0. Back" << endl;
-		choice = readInt("Select (0-9): ", 0, 9);
+		cout << "  10. Run test sequence" << endl;
+		cout << "  0.  Back" << endl;
+		choice = readInt("Select (0-10): ", 0, 10);
 
 		if (choice == 1) {
 			int zone = readInt("  Zone (0-9): ", 0, 9);
@@ -394,13 +699,71 @@ void Menu::menuTaskScheduling() {
 			eq.display();
 			dq.display();
 		}
+		else if (choice == 10) {
+			testTaskScheduling();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 6 — Hierarchical Decision Intelligence
+// [Test] Decision System - score, local/regional/global decisions, terrain, human risk
+void Menu::testDecisionSystem() {
+    cout << endl;
+	cout << "[Test] Decision System" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Computing risk score (fire=0.85, smoke=0.75, temp=0.8)..." << endl;
+	float score = dtree.computeScore(0.85f, 0.75f, 0.8f);
+
+	cout << endl;
+	cout << "-> Local decision on score..." << endl;
+	dtree.localDecision(score);
+
+	cout << endl;
+	cout << "-> Regional decision (spread rate=0.65)..." << endl;
+	dtree.regionalDecision(0.65f);
+
+	cout << endl;
+	cout << "-> Global decision (total risk=0.82, threshold=0.6)..." << endl;
+	dtree.globalDecision(0.82f, 0.6f);
+
+	cout << endl;
+	cout << "-> Full decision chain (fire=0.7, smoke=0.6, temp=0.5)..." << endl;
+	float chain = dtree.computeScore(0.7f, 0.6f, 0.5f);
+	dtree.localDecision(chain);
+	float spread = chain - 0.1f;
+	if (spread < 0.0f) {
+		spread = 0.0f;
+	}
+	dtree.regionalDecision(spread);
+	dtree.globalDecision(chain, 0.6f);
+
+	cout << endl;
+	cout << "-> Zone hierarchy tree:" << endl;
+	ztree.display();
+
+	cout << endl;
+	cout << "-> Terrain risk (slope=0.7, dryness=0.8, density=0.6)..." << endl;
+	ttree.computeTerrainRisk(0.7f, 0.8f, 0.6f);
+
+	cout << endl;
+	cout << "-> Incident classification (value=0.75, threshold=0.6)..." << endl;
+	itree.classify(0.75f, 0.6f);
+
+	cout << endl;
+	cout << "-> Human intrusion risk (movement=0.8, restricted=0.9)..." << endl;
+	itree.computeHumanRisk(0.8f, 0.9f);
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 6 - Hierarchical Decision Intelligence
 void Menu::menuDecisionSystem() {
 	int choice;
 	int again = 1;
@@ -417,8 +780,9 @@ void Menu::menuDecisionSystem() {
 		cout << "  8.  Classify incident by threshold" << endl;
 		cout << "  9.  Compute human intrusion risk" << endl;
 		cout << "  10. Show all trees" << endl;
+		cout << "  11. Run test sequence" << endl;
 		cout << "  0.  Back" << endl;
-		choice = readInt("Select (0-10): ", 0, 10);
+		choice = readInt("Select (0-11): ", 0, 11);
 
 		if (choice == 1) {
 			cout << "  Score = 0.4*fire + 0.3*smoke + 0.3*temp" << endl;
@@ -482,13 +846,76 @@ void Menu::menuDecisionSystem() {
 			itree.display();
 			dtree.display();
 		}
+		else if (choice == 11) {
+			testDecisionSystem();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 7 — Spatial Connectivity and Graph-Based Routing
+// [Test] Spatial Routing - adds edges, runs BFS and DFS on both graphs, blocks a route
+void Menu::testSpatialRouting() {
+    cout << endl;
+	cout << "[Test] Spatial Routing System" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Adding extra edge between zone 6 and zone 7..." << endl;
+	listGraph.addEdge(6, 7, 1.8);
+	matGraph.addEdge(6, 7, 1.8);
+
+	cout << endl;
+	cout << "-> Setting fire levels on zones 2, 3, 4..." << endl;
+	listGraph.setFireLevel(2, 0.5);
+	listGraph.setFireLevel(3, 0.9);
+	listGraph.setFireLevel(4, 0.6);
+	matGraph.setFireLevel(2, 0.5);
+	matGraph.setFireLevel(3, 0.9);
+	matGraph.setFireLevel(4, 0.6);
+
+	cout << endl;
+	cout << "-> BFS fire spread from Zone 2 (adjacency list)..." << endl;
+	listGraph.bfsFireSpread(2);
+
+	cout << endl;
+	cout << "-> DFS deep analysis from Zone 2 (adjacency list)..." << endl;
+	listGraph.dfsDeepAnalysis(2);
+
+	cout << endl;
+	cout << "-> BFS fire spread from Zone 2 (adjacency matrix)..." << endl;
+	matGraph.bfsFireSpread(2);
+
+	cout << endl;
+	cout << "-> DFS deep analysis from Zone 2 (adjacency matrix)..." << endl;
+	matGraph.dfsDeepAnalysis(2);
+
+	cout << endl;
+	cout << "-> Simple path cost Zone 2 -> Zone 3 (danger=0.5)..." << endl;
+	listGraph.computePathCost(2, 3, 0.5);
+
+	cout << endl;
+	cout << "-> Fire-aware path cost Zone 2 -> Zone 3..." << endl;
+	listGraph.computeFireAwareCost(2, 3);
+	matGraph.computeFireAwareCost(2, 3);
+
+	cout << endl;
+	cout << "-> Blocking route between Zone 3 and Zone 4..." << endl;
+	listGraph.blockRoute(3, 4);
+	matGraph.blockRoute(3, 4);
+
+	cout << endl;
+	cout << "-> Adjacency list graph after block:" << endl;
+	listGraph.show();
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 7 - Spatial Connectivity and Graph-Based Routing
 void Menu::menuSpatialRouting() {
 	int choice;
 	int again = 1;
@@ -506,8 +933,9 @@ void Menu::menuSpatialRouting() {
 		cout << "  9.  Compute fire-aware path cost" << endl;
 		cout << "  10. Block a route" << endl;
 		cout << "  11. Set zone fire level" << endl;
+		cout << "  12. Run test sequence" << endl;
 		cout << "  0.  Back" << endl;
-		choice = readInt("Select (0-11): ", 0, 11);
+		choice = readInt("Select (0-12): ", 0, 12);
 
 		if (choice == 1) {
 			listGraph.show();
@@ -564,13 +992,80 @@ void Menu::menuSpatialRouting() {
 			listGraph.setFireLevel(zone, level);
 			matGraph.setFireLevel(zone, level);
 		}
+		else if (choice == 12) {
+			testSpatialRouting();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 8 — Hash-Based Indexing and Fast Retrieval
+// [Test] Hash Access - inserts into H1 and H2, triggers collision, caches, evicts
+void Menu::testHashAccess() {
+    cout << endl;
+	cout << "[Test] Hash-Based Fast Access" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Inserting zones 3, 4, 6 into primary table (H1)..." << endl;
+	h1.insert(3, 75.0, 85.0, 15.0);
+	h1.insert(4, 65.0, 78.0, 18.0);
+	h1.insert(6, 55.0, 60.0, 25.0);
+
+	cout << endl;
+	cout << "-> Retrieving zone 4 from H1..." << endl;
+	double t, s, h;
+	bool found = h1.retrieve(4, t, s, h);
+	if (found == false) {
+		cout << "  Not found in H1." << endl;
+	}
+
+	cout << endl;
+	cout << "-> Updating zone 3 in H1 (new temp=80)..." << endl;
+	h1.update(3, 80.0, 85.0, 15.0);
+
+	cout << endl;
+	cout << "-> Inserting zones 3 and 13 into collision table (H2)..." << endl;
+	cout << "   (Keys 3 and 13 hash to same bucket in a size-10 table)" << endl;
+	h2.insert(3, 75.0, 85.0, 15.0);
+	h2.insert(13, 50.0, 40.0, 30.0);
+
+	cout << endl;
+	cout << "-> Retrieving zone 13 from H2..." << endl;
+	h2.retrieve(13, t, s, h);
+
+	cout << endl;
+	cout << "-> Storing zones 3 and 4 in fast cache (H3)..." << endl;
+	h3.store(3, 80.0, 85.0, 15.0);
+	h3.store(4, 65.0, 78.0, 18.0);
+
+	cout << endl;
+	cout << "-> Fetching zone 3 twice (access count should increment)..." << endl;
+	h3.fetch(3, t, s, h);
+	h3.fetch(3, t, s, h);
+
+	cout << endl;
+	cout << "-> Trying to fetch zone 9 (cache miss)..." << endl;
+	h3.fetch(9, t, s, h);
+
+	cout << endl;
+	cout << "-> Evicting zone 4 from cache..." << endl;
+	h3.evict(4);
+
+	cout << endl;
+	cout << "-> Full table view:" << endl;
+	h1.show();
+	h2.show();
+	h3.show();
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 8 - Hash-Based Indexing and Fast Retrieval
 void Menu::menuHashAccess() {
 	int choice;
 	int again = 1;
@@ -585,8 +1080,9 @@ void Menu::menuHashAccess() {
 		cout << "  6. Update entry in H1" << endl;
 		cout << "  7. Evict entry from cache (H3)" << endl;
 		cout << "  8. View all hash tables" << endl;
+		cout << "  9. Run test sequence" << endl;
 		cout << "  0. Back" << endl;
-		choice = readInt("Select (0-8): ", 0, 8);
+		choice = readInt("Select (0-9): ", 0, 9);
 
 		if (choice == 1) {
 			int key = readInt("  Zone key: ", 0, 2147483647);
@@ -639,13 +1135,65 @@ void Menu::menuHashAccess() {
 			h2.show();
 			h3.show();
 		}
+		else if (choice == 9) {
+			testHashAccess();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 9 — System Monitoring and Adaptive Optimization
+// [Test] System Monitoring - sets load, latency, detects bottleneck, optimizes, resets
+void Menu::testMonitoring() {
+    cout << endl;
+	cout << "[Test] System Monitoring" << endl;
+	cout << endl;
+
+	cout << endl;
+	cout << "-> Setting active tasks=85, capacity=100 and computing load..." << endl;
+	monitor.setActiveTasks(85);
+	monitor.setCapacity(100);
+	monitor.computeLoad();
+
+	cout << endl;
+	cout << "-> Recording execution time (start=0ms, finish=12ms)..." << endl;
+	monitor.setStartTime(0.0f);
+	monitor.setFinishTime(12.0f);
+	monitor.computeLatency();
+
+	cout << endl;
+	cout << "-> Checking module QueueLayer for bottleneck (load=0.92)..." << endl;
+	monitor.detectBottleneck("QueueLayer", 0.92f);
+
+	cout << endl;
+	cout << "-> Running performance optimization..." << endl;
+	monitor.optimizePerformance();
+
+	cout << endl;
+	cout << "-> Full system health report:" << endl;
+	monitor.viewSystemHealth();
+
+	cout << endl;
+	cout << "-> Reducing load to 30 tasks and re-checking..." << endl;
+	monitor.setActiveTasks(30);
+	monitor.computeLoad();
+
+	cout << endl;
+	cout << "-> Resetting all metrics..." << endl;
+	monitor.reset();
+
+	cout << endl;
+	cout << "-> Health report after reset:" << endl;
+	monitor.viewSystemHealth();
+
+	cout << endl;
+	cout << "Test done. Press Enter to return." << endl;
+	cin.ignore(1000, '\n');
+	cin.get();
+}
+
+// Menu 9 - System Monitoring and Adaptive Optimization
 void Menu::menuMonitoring() {
 	int choice;
 	int again = 1;
@@ -658,8 +1206,9 @@ void Menu::menuMonitoring() {
 		cout << "  4. Optimize performance" << endl;
 		cout << "  5. View system health report" << endl;
 		cout << "  6. Reset all monitoring metrics" << endl;
+		cout << "  7. Run test sequence" << endl;
 		cout << "  0. Back" << endl;
-		choice = readInt("Select (0-6): ", 0, 6);
+		choice = readInt("Select (0-7): ", 0, 7);
 
 		if (choice == 1) {
 			int tasks = readInt("  Active tasks: ", 0, 2147483647);
@@ -691,13 +1240,16 @@ void Menu::menuMonitoring() {
 		else if (choice == 6) {
 			monitor.reset();
 		}
+		else if (choice == 7) {
+			testMonitoring();
+		}
 		else if (choice == 0) {
 			again = 0;
 		}
 	}
 }
 
-// Menu 10 — Scenario-Based System Evaluation
+// Menu 10 - Scenario-Based System Evaluation
 void Menu::menuScenarios() {
 	int choice;
 	int again = 1;
@@ -737,7 +1289,7 @@ void Menu::menuScenarios() {
 	}
 }
 
-// O(1) per iteration — top-level menu loop, switch used only here
+// O(1) per iteration - top-level menu loop, switch used only here
 void Menu::run() {
 	int choice = -1;
 	while (choice != 0) {

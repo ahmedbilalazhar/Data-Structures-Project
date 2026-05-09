@@ -4,7 +4,8 @@
 // Scenario 1: fire starts in Zone 3, spreads to Zone 4 and Zone 6
 // Uses: arrays, linked list, queue, graph, tree, hash
 void ScenarioRunner::runCascadingFire() {
-	cout << "SCENARIO 1: Cascading Fire and Resource Conflict Resolution" << endl;
+    cout << "SCENARIO 1: Cascading Fire and Resource Conflict Resolution" << endl;
+	cout << endl;
 
 	Baseline base;
 	base.set(3, 25.0f, 60.0f, 0.0f);
@@ -66,22 +67,26 @@ void ScenarioRunner::runCascadingFire() {
 
 	ResourceTree rtree;
 	rtree.buildDefault();
-	rtree.checkWaterAvailability(60.0f, 100.0f);
+    rtree.checkWaterAvailability(60.0f, 100.0f);
 	rtree.computePriority(0.9f, 0.8f);
+	cout << endl;
 
-	PrimaryIndexTable table(20);
+    PrimaryIndexTable table(20);
 	table.insert(3, 75.0, 85.0, 15.0);
 	table.insert(4, 65.0, 78.0, 18.0);
 	table.insert(6, 55.0, 60.0, 25.0);
+	cout << endl;
 	table.show();
 
+    cout << endl;
 	cout << "Scenario 1 complete." << endl;
 }
 
 // Scenario 2: Zone 2 sensors fail, system reconstructs using past data
 // Uses: arrays, doubly list, singly list, hash
 void ScenarioRunner::runSensorFailure() {
-	cout << "SCENARIO 2: Sensor Failure and System Reconstruction" << endl;
+    cout << "SCENARIO 2: Sensor Failure and System Reconstruction" << endl;
+	cout << endl;
 
 	SensorStream stream;
 	stream.add(25.0f, 5.0f, 60.0f);
@@ -117,6 +122,7 @@ void ScenarioRunner::runSensorFailure() {
 	colTable.insert(12, 26.5, 5.5, 58.0);
 	colTable.show();
 
+    cout << endl;
 	cout << "Zone 2 restored. Resuming normal operation." << endl;
 	cout << "Scenario 2 complete." << endl;
 }
@@ -124,36 +130,42 @@ void ScenarioRunner::runSensorFailure() {
 // Scenario 3: wildlife, fire, and human anomalies detected simultaneously
 // Uses: singly list, decision queue, incident tree, decision tree, graph
 void ScenarioRunner::runMultiFactorAnomaly() {
-	cout << "SCENARIO 3: Multi-Factor Anomaly Escalation System" << endl;
+    cout << "SCENARIO 3: Multi-Factor Anomaly Escalation System" << endl;
+	cout << endl;
 
 	SinglyList wildlifeEvents;
 	wildlifeEvents.insert(0.8f, 1, 5);
 	wildlifeEvents.insert(0.9f, 2, 5);
 	cout << "Wildlife events:" << endl;
-	wildlifeEvents.display();
+   wildlifeEvents.display();
+	cout << endl;
 
 	SinglyList fireEvents;
 	fireEvents.insert(70.0f, 1, 7);
 	fireEvents.insert(80.0f, 2, 7);
 	cout << "Fire events:" << endl;
-	fireEvents.display();
+   fireEvents.display();
+	cout << endl;
 
 	SinglyList humanEvents;
 	humanEvents.insert(0.7f, 1, 9);
 	cout << "Human events:" << endl;
-	humanEvents.display();
+  humanEvents.display();
+	cout << endl;
 
 	DecisionQueue dq;
 	dq.enqueue(1, 5, 0.85f, 2);
 	dq.enqueue(2, 7, 75.0f, 1);
 	dq.enqueue(3, 9, 0.7f, 2);
-	dq.display();
+   dq.display();
+	cout << endl;
 
 	IncidentTree itree;
 	itree.buildDefault();
 	itree.computeFireLevel(0.4f, 80.0f, 0.3f, 75.0f);
 	itree.computeHumanRisk(0.7f, 0.9f);
 	itree.classify(0.85f, 0.6f);
+	cout << endl;
 
 	DecisionTree dtree;
 	dtree.buildDefault();
@@ -161,20 +173,24 @@ void ScenarioRunner::runMultiFactorAnomaly() {
 	dtree.localDecision(score);
 	dtree.regionalDecision(0.6f);
 	dtree.globalDecision(score, 0.6f);
+	cout << endl;
 
 	AdjMatrixGraph mg(10);
 	mg.addEdge(5, 7, 2.0);
 	mg.addEdge(7, 9, 1.5);
 	mg.setFireLevel(7, 0.75);
-	mg.dfsDeepAnalysis(5);
+  mg.dfsDeepAnalysis(5);
+	cout << endl;
 
+    cout << endl;
 	cout << "Scenario 3 complete." << endl;
 }
 
 // Scenario 4: system gets overloaded, tasks paused, cache used, load balanced
 // Uses: all queues, hash cache, monitor, doubly list
 void ScenarioRunner::runSystemOverload() {
-	cout << "SCENARIO 4: System Overload and Load Redistribution" << endl;
+    cout << "SCENARIO 4: System Overload and Load Redistribution" << endl;
+	cout << endl;
 
 	RoutineQueue rq;
 	SurveillanceQueue sq;
@@ -191,10 +207,13 @@ void ScenarioRunner::runSystemOverload() {
 
 	cout << "Routine queue:" << endl;
 	rq.display();
+  cout << endl;
 	cout << "Surveillance queue:" << endl;
 	sq.display();
+   cout << endl;
 	cout << "Emergency queue (processes first):" << endl;
 	eq.display();
+   cout << endl;
 	eq.dequeue();
 	eq.dequeue();
 
@@ -206,7 +225,9 @@ void ScenarioRunner::runSystemOverload() {
 	dq.pauseTask(201);
 	cout << "Decision queue with paused low-priority tasks:" << endl;
 	dq.display();
+    cout << endl;
 	dq.processAll();
+	cout << endl;
 
 	FastCache cache(10);
 	cache.store(3, 80.0, 75.0, 15.0);
@@ -215,6 +236,7 @@ void ScenarioRunner::runSystemOverload() {
 	cache.fetch(3, t, s, h);
 	cache.fetch(3, t, s, h);
 	cache.show();
+	cout << endl;
 
 	SystemMonitor mon;
 	mon.setStartTime(0.0f);
@@ -225,22 +247,27 @@ void ScenarioRunner::runSystemOverload() {
 	mon.computeLoad();
 	mon.detectBottleneck("QueueLayer", 0.9f);
 	mon.optimizePerformance();
+	cout << endl;
 
 	dq.resumeTask(200);
 	dq.resumeTask(201);
 	dq.processAll();
+	cout << endl;
 
 	mon.setActiveTasks(40);
 	mon.computeLoad();
 	mon.viewSystemHealth();
+	cout << endl;
 
+    cout << endl;
 	cout << "Scenario 4 complete." << endl;
 }
 
 // Scenario 5: multi-zone emergency, global sync, coordinated response
 // Uses: all structures together
 void ScenarioRunner::runGlobalEmergency() {
-	cout << "SCENARIO 5: Global Multi-Zone Emergency Synchronization" << endl;
+    cout << "SCENARIO 5: Global Multi-Zone Emergency Synchronization" << endl;
+	cout << endl;
 
 	ForestGrid grid;
 	int r = 0;
@@ -261,9 +288,11 @@ void ScenarioRunner::runGlobalEmergency() {
 	globalHistory.insertBack(80.0f, 4, 4);
 	cout << "Global event history:" << endl;
 	globalHistory.displayForward();
+    cout << endl;
 	globalHistory.correctBackward(2, 26.0f);
 	globalHistory.synchronize(30.0f);
 	globalHistory.displayForward();
+	cout << endl;
 
 	AdjListGraph graph(10);
 	graph.addEdge(1, 2, 1.0);
@@ -278,11 +307,13 @@ void ScenarioRunner::runGlobalEmergency() {
 	graph.bfsFireSpread(3);
 	graph.blockRoute(3, 4);
 	graph.computeFireAwareCost(2, 3);
+	cout << endl;
 
 	DecisionTree dtree;
 	dtree.buildDefault();
 	float score = dtree.computeScore(0.9f, 0.8f, 0.85f);
 	dtree.globalDecision(score, 0.6f);
+	cout << endl;
 
 	EmergencyQueue eq;
 	eq.enqueue(1, 1, 0.3f, 3);
@@ -291,11 +322,13 @@ void ScenarioRunner::runGlobalEmergency() {
 	eq.enqueue(4, 4, 0.7f, 1);
 	eq.enqueue(5, 5, 0.5f, 2);
 	eq.display();
+	cout << endl;
 
 	ResourceTree rtree;
 	rtree.buildDefault();
-	rtree.checkWaterAvailability(50.0f, 150.0f);
+    rtree.checkWaterAvailability(50.0f, 150.0f);
 	rtree.computePriority(0.9f, 0.95f);
+	cout << endl;
 
 	PrimaryIndexTable table(20);
 	table.insert(1, 25.0, 10.0, 55.0);
@@ -303,6 +336,7 @@ void ScenarioRunner::runGlobalEmergency() {
 	table.insert(3, 80.0, 90.0, 10.0);
 	table.insert(4, 70.0, 75.0, 15.0);
 	table.insert(5, 50.0, 55.0, 25.0);
+   cout << endl;
 	table.show();
 
 	CircularList cloop;
@@ -323,16 +357,23 @@ void ScenarioRunner::runGlobalEmergency() {
 	mon.detectBottleneck("GraphLayer", 0.9f);
 	mon.viewSystemHealth();
 
+    cout << endl;
 	cout << "Scenario 5 complete." << endl;
 }
 
 // Runs all five scenarios in sequence
 void ScenarioRunner::runFullSimulation() {
-	cout << "RUNNING FULL SYSTEM SIMULATION" << endl;
+    cout << "RUNNING FULL SYSTEM SIMULATION" << endl;
+	cout << endl;
 	runCascadingFire();
+	cout << endl;
 	runSensorFailure();
+	cout << endl;
 	runMultiFactorAnomaly();
+	cout << endl;
 	runSystemOverload();
+	cout << endl;
 	runGlobalEmergency();
+	cout << endl;
 	cout << "Full simulation complete." << endl;
 }

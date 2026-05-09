@@ -55,6 +55,16 @@ private:
 	void menuMonitoring();
 	void menuScenarios();
 
+	void testEnvironmental();
+	void testForestGrid();
+	void testEventMemory();
+	void testFireDetection();
+	void testTaskScheduling();
+	void testDecisionSystem();
+	void testSpatialRouting();
+	void testHashAccess();
+	void testMonitoring();
+
 public:
 	Menu();
 	void run();

@@ -1,4 +1,5 @@
 #include "hash.h"
+#include <iomanip>
 
 // ============================================================
 // HashEntry
@@ -76,6 +77,8 @@ void PrimaryIndexTable::insert(int key, double temp, double smk, double humid) {
 	if (index != original) {
 		cout << "  Note: linear probe used, original index was " << original << endl;
 	}
+
+	cout << endl;
 }
 
 // O(1) average — retrieves using linear probe
@@ -91,6 +94,7 @@ bool PrimaryIndexTable::retrieve(int key, double& temp, double& smk, double& hum
 			cout << "H1 Retrieve: Zone " << key
 				<< " found at index " << index
 				<< " (temp=" << temp << ", smoke=" << smk << ", humid=" << humid << ")" << endl;
+            cout << endl;
 			return true;
 		}
 		index = (index + 1) % tableSize;
@@ -101,6 +105,7 @@ bool PrimaryIndexTable::retrieve(int key, double& temp, double& smk, double& hum
 	}
 
 	cout << "H1 Retrieve: Zone " << key << " not found." << endl;
+   cout << endl;
 	return false;
 }
 
@@ -116,6 +121,7 @@ void PrimaryIndexTable::update(int key, double temp, double smk, double humid) {
 			table[index].humidity = humid;
 			cout << "H1 Update: Zone " << key
 				<< " at index " << index << " updated." << endl;
+     cout << endl;
 			return;
 		}
 		index = (index + 1) % tableSize;
@@ -126,24 +132,32 @@ void PrimaryIndexTable::update(int key, double temp, double smk, double humid) {
 	}
 
 	cout << "H1 Update: Zone " << key << " not found. Use insert instead." << endl;
+   cout << endl;
 }
 
 // O(n) — prints all occupied slots
 void PrimaryIndexTable::show() {
+    cout << endl;
 	cout << "Primary Index Table (H1):" << endl;
-	cout << "Index  | Key  | Temp   | Smoke  | Humid  | Status" << endl;
+	cout << left << setw(7) << "Index" << " | "
+		<< left << setw(6) << "Key" << " | "
+		<< left << setw(7) << "Temp" << " | "
+		<< left << setw(7) << "Smoke" << " | "
+		<< left << setw(7) << "Humid" << " | Status" << endl;
 	for (int i = 0; i < tableSize; i++) {
 		if (table[i].occupied == true) {
-			cout << "  " << i
-				<< "    | " << table[i].key
-				<< "   | " << table[i].temperature
-				<< "  | " << table[i].smoke
-				<< "  | " << table[i].humidity
-				<< "  | occupied" << endl;
+			cout << left << setw(7) << i << " | "
+				<< left << setw(6) << table[i].key << " | "
+				<< left << setw(7) << table[i].temperature << " | "
+				<< left << setw(7) << table[i].smoke << " | "
+				<< left << setw(7) << table[i].humidity << " | occupied" << endl;
 		}
 		else {
-			cout << "  " << i
-				<< "    |  --  |  --    |  --    |  --    | empty" << endl;
+			cout << left << setw(7) << i << " | "
+				<< left << setw(6) << "--" << " | "
+				<< left << setw(7) << "--" << " | "
+				<< left << setw(7) << "--" << " | "
+				<< left << setw(7) << "--" << " | empty" << endl;
 		}
 	}
 }
@@ -213,6 +227,7 @@ void CollisionTable::insert(int key, double temp, double smk, double humid) {
 		cout << " (collision handled via chaining)";
 	}
 	cout << endl;
+   cout << endl;
 }
 
 // O(n) worst — traverses chain at index to find key
@@ -228,12 +243,14 @@ bool CollisionTable::retrieve(int key, double& temp, double& smk, double& humid)
 			cout << "H2 Retrieve: Zone " << key
 				<< " found at bucket " << index
 				<< " (temp=" << temp << ", smoke=" << smk << ", humid=" << humid << ")" << endl;
+            cout << endl;
 			return true;
 		}
 		cur = cur->next;
 	}
 
 	cout << "H2 Retrieve: Zone " << key << " not found in bucket " << index << endl;
+   cout << endl;
 	return false;
 }
 
@@ -249,12 +266,14 @@ void CollisionTable::update(int key, double temp, double smk, double humid) {
 			cur->humidity = humid;
 			cout << "H2 Update: Zone " << key
 				<< " updated at bucket " << index << endl;
+         cout << endl;
 			return;
 		}
 		cur = cur->next;
 	}
 
 	cout << "H2 Update: Zone " << key << " not found." << endl;
+   cout << endl;
 }
 
 // O(n) — prints all buckets and their chained entries
@@ -324,6 +343,7 @@ void FastCache::store(int key, double temp, double smk, double humid) {
 	cout << "H3 Cache Store: Zone " << key
 		<< " cached at slot " << index
 		<< " (temp=" << temp << ", smoke=" << smk << ", humid=" << humid << ")" << endl;
+   cout << endl;
 }
 
 // O(1) — fetches data from cache, increments access count
@@ -339,10 +359,12 @@ bool FastCache::fetch(int key, double& temp, double& smk, double& humid) {
 		cout << "H3 Cache Hit: Zone " << key
 			<< " retrieved from slot " << index
 			<< " (access count: " << cache[index].accessCount << ")" << endl;
+            cout << endl;
 		return true;
 	}
 
 	cout << "H3 Cache Miss: Zone " << key << " not in cache." << endl;
+   cout << endl;
 	return false;
 }
 
@@ -356,6 +378,7 @@ void FastCache::update(int key, double temp, double smk, double humid) {
 		cache[index].humidity = humid;
 		cout << "H3 Cache Update: Zone " << key
 			<< " updated at slot " << index << endl;
+       cout << endl;
 	}
 	else {
 		cout << "H3 Cache Update: Zone " << key
@@ -371,6 +394,7 @@ void FastCache::evict(int key) {
 		cache[index].valid = false;
 		cout << "H3 Cache Evict: Zone " << key
 			<< " removed from slot " << index << endl;
+       cout << endl;
 	}
 	else {
 		cout << "H3 Cache Evict: Zone " << key << " not in cache." << endl;
@@ -379,20 +403,45 @@ void FastCache::evict(int key) {
 
 // O(n) — prints all valid cache entries
 void FastCache::show() {
-	cout << "Fast Retrieval Cache (H3):" << endl;
-	cout << "Slot | Key  | Temp   | Smoke  | Humid  | Accesses" << endl;
+    cout << "Fast Retrieval Cache (H3):" << endl;
+	// Define consistent column widths
+	const int wSlot = 4;
+	const int wKey = 6;
+	const int wTemp = 8;
+	const int wSmoke = 8;
+	const int wHumid = 8;
+	const int wAccess = 8;
+
+	cout << left << setw(wSlot) << "Slot" << " | "
+		<< left << setw(wKey) << "Key" << " | "
+		<< left << setw(wTemp) << "Temp" << " | "
+		<< left << setw(wSmoke) << "Smoke" << " | "
+		<< left << setw(wHumid) << "Humid" << " | "
+		<< left << setw(wAccess) << "Accesses" << endl;
+
 	for (int i = 0; i < cacheSize; i++) {
 		if (cache[i].valid == true) {
-			cout << "  " << i
-				<< "  | " << cache[i].key
-				<< "   | " << cache[i].temperature
-				<< "  | " << cache[i].smoke
-				<< "  | " << cache[i].humidity
-				<< "  | " << cache[i].accessCount << endl;
+			// Preserve stream flags and precision
+			auto f = cout.flags();
+			int p = cout.precision();
+			cout << fixed << setprecision(2);
+			cout << left << setw(wSlot) << i << " | "
+				<< left << setw(wKey) << cache[i].key << " | "
+				<< left << setw(wTemp) << cache[i].temperature << " | "
+				<< left << setw(wSmoke) << cache[i].smoke << " | "
+				<< left << setw(wHumid) << cache[i].humidity << " | "
+				<< left << setw(wAccess) << cache[i].accessCount << endl;
+			// Restore stream flags and precision
+			cout.flags(f);
+			cout.precision(p);
 		}
 		else {
-			cout << "  " << i
-				<< "  |  --  |  --    |  --    |  --    |  --" << endl;
+			cout << left << setw(wSlot) << i << " | "
+				<< left << setw(wKey) << "--" << " | "
+				<< left << setw(wTemp) << "--" << " | "
+				<< left << setw(wSmoke) << "--" << " | "
+				<< left << setw(wHumid) << "--" << " | "
+				<< left << setw(wAccess) << "--" << endl;
 		}
 	}
 }

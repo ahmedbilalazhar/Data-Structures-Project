@@ -72,6 +72,7 @@ void Baseline::show() {
 	for (int i = 0; i < 10; i++) {
 		cout << i << "     " << temp[i] << "    " << humidity[i] << "        " << smoke[i] << endl;
 	}
+    cout << endl;
 }
 
 // SensorStream - A2: Dynamic Sensor Stream Array (1D)
@@ -96,6 +97,7 @@ void SensorStream::add(float t, float s, float h) {
 		humid[total] = h;
 		total = total + 1;
 		cout << "Reading added. Total: " << total << endl;
+        cout << endl;
 	}
 	else {
 		cout << "Stream full. Cannot add more readings." << endl;
@@ -146,6 +148,7 @@ void SensorStream::show() {
 	for (int i = 0; i < total; i++) {
 		cout << i << "      " << temp[i] << "     " << smoke[i] << "    " << humid[i] << endl;
 	}
+    cout << endl;
 }
 
 // ForestGrid - A3: Static Forest Grid Matrix (2D)
@@ -224,9 +227,11 @@ void ForestGrid::interpolate(int r, int c) {
 	if (count > 0) {
 		temp[r][c] = sum / count;
 		cout << "Interpolated value at (" << r << "," << c << "): " << temp[r][c] << " C" << endl;
+        cout << endl;
 	}
 	else {
 		cout << "No valid neighbors for interpolation." << endl;
+        cout << endl;
 	}
 }
 
@@ -268,6 +273,7 @@ void ForestGrid::findBoundaries() {
 
 	if (found == false) {
 		cout << "No sharp boundaries found." << endl;
+        cout << endl;
 	}
 }
 
@@ -289,6 +295,7 @@ void ForestGrid::show() {
 		}
 		cout << endl;
 	}
+    cout << endl;
 }
 
 // Terrain - A4: Dynamic Terrain Expansion Matrix (2D)
@@ -315,6 +322,7 @@ void Terrain::update(int r, int c, float rk, float h, float sl) {
 		humidity[r][c] = h;
 		slope[r][c] = sl;
 		cout << "Terrain cell (" << r << "," << c << ") updated." << endl;
+        cout << endl;
 	}
 	else {
 		cout << "Invalid terrain cell." << endl;
@@ -362,6 +370,7 @@ void Terrain::filterAnomalies() {
 
 	if (found == false) {
 		cout << "No anomalies detected in terrain." << endl;
+        cout << endl;
 	}
 }
 
@@ -383,6 +392,7 @@ void Terrain::show() {
 		}
 		cout << endl;
 	}
+    cout << endl;
 }
 
 // O(n) - check each reading against manual thresholds: temp>45, smoke>70, humid<20
@@ -409,5 +419,6 @@ void SensorStream::checkAnomalies(float baseTemp, float baseSmoke, float baseHum
 	}
 	if (found == false) {
 		cout << "All readings are within safe limits." << endl;
+        cout << endl;
 	}
 }

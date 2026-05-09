@@ -59,6 +59,7 @@ void AdjListGraph::addZone(int zoneId) {
 	}
 	zoneCount = zoneCount + 1;
 	cout << "Zone " << zoneId << " registered in adjacency list graph." << endl;
+   cout << endl;
 }
 
 // O(1) — adds undirected edge between two zones
@@ -78,6 +79,7 @@ void AdjListGraph::addEdge(int from, int to, double distance) {
 
 	cout << "Edge added between Zone " << from << " and Zone " << to
 		<< " with distance " << distance << endl;
+   cout << endl;
 }
 
 // O(1) — updates the fire level for a zone
@@ -88,6 +90,7 @@ void AdjListGraph::setFireLevel(int zone, double level) {
 	}
 	fireLevel[zone] = level;
 	cout << "Fire level for Zone " << zone << " set to " << level << endl;
+   cout << endl;
 }
 
 // BFS helper: enqueue
@@ -155,6 +158,7 @@ void AdjListGraph::bfsFireSpread(int startZone) {
 	}
 
 	cout << "BFS traversal complete." << endl;
+   cout << endl;
 }
 
 // O(V + E) — DFS from startZone, deep path analysis
@@ -194,6 +198,7 @@ void AdjListGraph::dfsDeepAnalysis(int startZone) {
 	}
 
 	cout << "DFS traversal complete." << endl;
+   cout << endl;
 }
 
 // O(E) — simple path cost: distance + danger value for a direct edge
@@ -206,11 +211,13 @@ double AdjListGraph::computePathCost(int from, int to, double dangerValue) {
 				<< ": distance=" << cur->weight
 				<< " + danger=" << dangerValue
 				<< " = " << cost << endl;
+        cout << endl;
 			return cost;
 		}
 		cur = cur->next;
 	}
 	cout << "No direct edge from Zone " << from << " to Zone " << to << endl;
+    cout << endl;
 	return -1.0;
 }
 
@@ -223,11 +230,13 @@ double AdjListGraph::computeFireAwareCost(int from, int to) {
 			cout << "Fire-aware path cost from Zone " << from << " to Zone " << to
 				<< ": " << cur->weight << " * (1 + " << fireLevel[to]
 				<< ") = " << cost << endl;
+        cout << endl;
 			return cost;
 		}
 		cur = cur->next;
 	}
 	cout << "No direct edge from Zone " << from << " to Zone " << to << endl;
+    cout << endl;
 	return -1.0;
 }
 
@@ -251,6 +260,7 @@ void AdjListGraph::blockRoute(int from, int to) {
 
 	cout << "Route between Zone " << from << " and Zone " << to
 		<< " has been blocked." << endl;
+   cout << endl;
 }
 
 // O(V + E) — prints all zones and their neighbor lists
@@ -271,6 +281,7 @@ void AdjListGraph::show() {
 			cout << endl;
 		}
 	}
+   cout << endl;
 }
 
 // ============================================================
@@ -419,6 +430,7 @@ void AdjMatrixGraph::dfsDeepAnalysis(int startZone) {
 	dfsTop = -1;
 
 	cout << "DFS Deep Analysis from Zone " << startZone << " (matrix):" << endl;
+	cout << endl;
 
 	dfsPush(startZone);
 
@@ -439,6 +451,7 @@ void AdjMatrixGraph::dfsDeepAnalysis(int startZone) {
 	}
 
 	cout << "DFS traversal complete." << endl;
+   cout << endl;
 }
 
 // O(V) — simple path cost: matrix[from][to] + dangerValue
