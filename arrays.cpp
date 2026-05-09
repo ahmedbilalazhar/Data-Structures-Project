@@ -384,3 +384,30 @@ void Terrain::show() {
 		cout << endl;
 	}
 }
+
+// O(n) - check each reading against manual thresholds: temp>45, smoke>70, humid<20
+void SensorStream::checkAnomalies(float baseTemp, float baseSmoke, float baseHumid) {
+	if (total == 0) {
+		cout << "No sensor readings to check." << endl;
+		return;
+	}
+	bool found = false;
+	cout << "Anomaly Check Results:" << endl;
+	for (int i = 0; i < total; i++) {
+		if (temp[i] > 45.0) {
+			cout << "Index " << i << " FIRE RISK - Temp: " << temp[i] << " C" << endl;
+			found = true;
+		}
+		if (smoke[i] > 70.0) {
+			cout << "Index " << i << " SMOKE ALERT - Smoke: " << smoke[i] << endl;
+			found = true;
+		}
+		if (humid[i] < 20.0) {
+			cout << "Index " << i << " DRY CONDITION - Humidity: " << humid[i] << "%" << endl;
+			found = true;
+		}
+	}
+	if (found == false) {
+		cout << "All readings are within safe limits." << endl;
+	}
+}

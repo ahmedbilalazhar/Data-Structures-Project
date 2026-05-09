@@ -38,6 +38,8 @@ public:
 	float getHumid(int i);                  // O(1) - get humidity at index i
 	int   getTotal();                       // return count of stored readings
 	void  show();                           // print all stored readings
+	void checkAnomalies(float baseTemp, float baseSmoke, float baseHumid);
+	// O(n) - flag readings outside safe limits
 };
 
 class ForestGrid {
