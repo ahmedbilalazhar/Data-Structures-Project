@@ -2,12 +2,12 @@
 #include "monitor.h"
 
 SystemMonitor::SystemMonitor() {
-	startTime = 0.0;
-	finishTime = 0.0;
+	startTime = 0.0f;
+	finishTime = 0.0f;
 	activeTasks = 0;
 	capacity = 100;
-	latency = 0.0;
-	load = 0.0;
+	latency = 0.0f;
+	load = 0.0f;
 	bottleneckDetected = false;
 	int i = 0;
 	while (i < 50) {
@@ -32,7 +32,7 @@ void SystemMonitor::setFinishTime(float t) {
 float SystemMonitor::computeLatency() {
 	latency = finishTime - startTime;
 	cout << "Monitor: Latency = " << finishTime << " - " << startTime << " = " << latency << " ms" << endl;
-	if (latency > 5.0) {
+	if (latency > 5.0f) {
 		cout << "Monitor: WARNING - High latency detected." << endl;
 	}
 	else {
@@ -62,14 +62,14 @@ void SystemMonitor::setCapacity(int cap) {
 float SystemMonitor::computeLoad() {
 	if (capacity == 0) {
 		cout << "Monitor: Capacity is zero, cannot compute load." << endl;
-		return 0.0;
+		return 0.0f;
 	}
 	load = (float)activeTasks / (float)capacity;
 	cout << "Monitor: Load = " << activeTasks << " / " << capacity << " = " << load << endl;
-	if (load > 0.8) {
+	if (load > 0.8f) {
 		cout << "Monitor: OVERLOAD detected." << endl;
 	}
-	else if (load > 0.5) {
+	else if (load > 0.5f) {
 		cout << "Monitor: Load is moderate." << endl;
 	}
 	else {
@@ -81,7 +81,7 @@ float SystemMonitor::computeLoad() {
 // O(1) - check if a module's load exceeds 0.8 threshold
 void SystemMonitor::detectBottleneck(const char* mod, float moduleLoad) {
 	cout << "Monitor: Checking module [" << mod << "] load = " << moduleLoad << endl;
-	if (moduleLoad > 0.8) {
+	if (moduleLoad > 0.8f) {
 		bottleneckDetected = true;
 		int i = 0;
 		while (mod[i] != '\0' && i < 49) {
@@ -99,12 +99,12 @@ void SystemMonitor::detectBottleneck(const char* mod, float moduleLoad) {
 // O(1) - print performance suggestion based on current load
 void SystemMonitor::optimizePerformance() {
 	cout << "Monitor: Running performance optimization..." << endl;
-	if (load > 0.8) {
+	if (load > 0.8f) {
 		cout << "Monitor: Redistributing workload to reduce overload." << endl;
 		cout << "Monitor: Pausing low-priority tasks." << endl;
 		cout << "Monitor: Increasing cache usage for frequent reads." << endl;
 	}
-	else if (load > 0.5) {
+	else if (load > 0.5f) {
 		cout << "Monitor: Moderate load. Adjusting execution priorities." << endl;
 	}
 	else {
@@ -127,10 +127,10 @@ void SystemMonitor::viewSystemHealth() {
 	else {
 		cout << "  Bottleneck   : None detected" << endl;
 	}
-	if (latency <= 5.0 && load <= 0.8) {
+	if (latency <= 5.0f && load <= 0.8f) {
 		cout << "  Status       : NORMAL" << endl;
 	}
-	else if (load > 0.8) {
+	else if (load > 0.8f) {
 		cout << "  Status       : OVERLOADED" << endl;
 	}
 	else {
@@ -140,11 +140,11 @@ void SystemMonitor::viewSystemHealth() {
 
 // O(1) - reset all monitoring counters
 void SystemMonitor::reset() {
-	startTime = 0.0;
-	finishTime = 0.0;
+	startTime = 0.0f;
+	finishTime = 0.0f;
 	activeTasks = 0;
-	latency = 0.0;
-	load = 0.0;
+	latency = 0.0f;
+	load = 0.0f;
 	bottleneckDetected = false;
 	int i = 0;
 	while (i < 50) {

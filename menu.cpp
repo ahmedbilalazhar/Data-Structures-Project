@@ -1,6 +1,36 @@
 // menu.cpp
 #include "menu.h"
 
+// O(1) - reads a valid integer from cin, recovers from bad input
+static int readInt(const char* prompt) {
+	int val;
+	while (true) {
+		cout << prompt;
+		cin >> val;
+		if (cin.good()) {
+			return val;
+		}
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Error: Expected a number. Try again." << endl;
+	}
+}
+
+// O(1) - reads a valid float from cin, recovers from bad input
+static float readFloat(const char* prompt) {
+	float val;
+	while (true) {
+		cout << prompt;
+		cin >> val;
+		if (cin.good()) {
+			return val;
+		}
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Error: Expected a decimal number. Try again." << endl;
+	}
+}
+
 Menu::Menu() : listGraph(10), matGraph(10), h1(20), h2(10), h3(10) {
 	taskCounter = 1;
 	eventCounter = 1;
@@ -9,13 +39,13 @@ Menu::Menu() : listGraph(10), matGraph(10), h1(20), h2(10), h3(10) {
 	rtree.buildDefault();
 	itree.buildDefault();
 	dtree.buildDefault();
-	listGraph.addEdge(0, 1, 2.0);
-	listGraph.addEdge(1, 2, 3.0);
-	listGraph.addEdge(2, 3, 1.5);
-	listGraph.addEdge(3, 4, 2.5);
-	matGraph.addEdge(0, 1, 2.0);
-	matGraph.addEdge(1, 2, 3.0);
-	matGraph.addEdge(2, 3, 1.5);
+	listGraph.addEdge(0, 1, 2.0f);
+	listGraph.addEdge(1, 2, 3.0f);
+	listGraph.addEdge(2, 3, 1.5f);
+	listGraph.addEdge(3, 4, 2.5f);
+	matGraph.addEdge(0, 1, 2.0f);
+	matGraph.addEdge(1, 2, 3.0f);
+	matGraph.addEdge(2, 3, 1.5f);
 }
 
 void Menu::menuEnvironmental() {
@@ -23,18 +53,17 @@ void Menu::menuEnvironmental() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "1. Environmental Data" << endl;
-		cout << "  1.1 Add Sensor Reading" << endl;
-		cout << "  1.2 Store in Dynamic Array" << endl;
-		cout << "  1.3 Compare with Baseline" << endl;
-		cout << "  1.4 Validate and Filter Noise" << endl;
+		cout << "Environmental Data" << endl;
+		cout << "  1. Add sensor reading" << endl;
+		cout << "  2. Show dynamic array" << endl;
+		cout << "  3. Compare with baseline" << endl;
+		cout << "  4. Validate and filter noise" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
-			float t, s, h;
-			cout << "Enter temp smoke humidity: ";
-			cin >> t >> s >> h;
+			float t = readFloat("  Temp: ");
+			float s = readFloat("  Smoke: ");
+			float h = readFloat("  Humidity: ");
 			stream.add(t, s, h);
 		}
 		else if (choice == 2) {
@@ -45,13 +74,13 @@ void Menu::menuEnvironmental() {
 			base.show();
 		}
 		else if (choice == 4) {
-			stream.checkAnomalies(25.0, 0.0, 60.0);
+			stream.checkAnomalies(25.0f, 0.0f, 60.0f);
 		}
 		else if (choice == 0) {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -61,13 +90,12 @@ void Menu::menuForestGrid() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "2. Forest Grid Status" << endl;
-		cout << "  2.1 Display 1D Time Series" << endl;
-		cout << "  2.2 Display 2D Forest Matrix" << endl;
-		cout << "  2.3 View Zone Conditions" << endl;
+		cout << "Forest Grid Status" << endl;
+		cout << "  1. 1D time series" << endl;
+		cout << "  2. 2D forest matrix" << endl;
+		cout << "  3. Zone conditions" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
 			stream.show();
 		}
@@ -81,7 +109,7 @@ void Menu::menuForestGrid() {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -91,45 +119,39 @@ void Menu::menuEventMemory() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "3. Event Memory System" << endl;
-		cout << "  3.1 Store Event" << endl;
-		cout << "  3.2 Traverse Forward" << endl;
-		cout << "  3.3 Traverse Backward" << endl;
-		cout << "  3.4 Circular Monitoring" << endl;
-		cout << "  3.5 Restore Last Stable State" << endl;
+		cout << "Event Memory System" << endl;
+		cout << "  1. Store event" << endl;
+		cout << "  2. Traverse forward" << endl;
+		cout << "  3. Traverse backward" << endl;
+		cout << "  4. Circular monitoring" << endl;
+		cout << "  5. Restore last stable state" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
-			float v;
-			int t, z;
-			cout << "Enter value time zone: ";
-			cin >> v >> t >> z;
+			float v = readFloat("  Value: ");
+			int t = readInt("  Time: ");
+			int z = readInt("  Zone: ");
 			rawList.insert(v, t, z);
 			corrList.insertBack(v, t, z);
 			loopList.insert(v, t, z);
 			eventCounter = eventCounter + 1;
-			cout << "Event stored in all lists." << endl;
+			cout << "Event stored." << endl;
 		}
 		else if (choice == 2) {
-			cout << "Forward traversal:" << endl;
+			cout << "Forward:" << endl;
 			rawList.display();
 		}
 		else if (choice == 3) {
-			cout << "Backward traversal:" << endl;
+			cout << "Backward:" << endl;
 			corrList.displayBackward();
 		}
 		else if (choice == 4) {
-			int rounds;
-			cout << "Enter rounds: ";
-			cin >> rounds;
+			int rounds = readInt("  Rounds: ");
 			loopList.monitor(rounds);
 		}
 		else if (choice == 5) {
-			float v;
-			int t;
-			cout << "Enter correction value and from-time: ";
-			cin >> v >> t;
+			float v = readFloat("  Correction value: ");
+			int t = readInt("  From-time: ");
 			corrList.correctBackward(t, v);
 			corrList.displayForward();
 		}
@@ -137,7 +159,7 @@ void Menu::menuEventMemory() {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -147,27 +169,24 @@ void Menu::menuFireDetection() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "4. Fire Detection and Control" << endl;
-		cout << "  4.1 Detect Fire Risk" << endl;
-		cout << "  4.2 Trigger Emergency Alert" << endl;
-		cout << "  4.3 Priority-Based Fire Response" << endl;
-		cout << "  4.4 Simulate Fire Spread (BFS)" << endl;
-		cout << "  4.5 Allocate Firefighting Resources" << endl;
+		cout << "Fire Detection and Control" << endl;
+		cout << "  1. Detect fire risk" << endl;
+		cout << "  2. Trigger emergency alert" << endl;
+		cout << "  3. Priority-based fire response" << endl;
+		cout << "  4. Simulate fire spread (BFS)" << endl;
+		cout << "  5. Allocate firefighting resources" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
-			float fire, smoke, temp;
-			cout << "Enter fire smoke temp (0-1 scale): ";
-			cin >> fire >> smoke >> temp;
+			float fire = readFloat("  Fire (0-1): ");
+			float smoke = readFloat("  Smoke (0-1): ");
+			float temp = readFloat("  Temp (0-1): ");
 			float score = dtree.computeScore(fire, smoke, temp);
 			dtree.localDecision(score);
 		}
 		else if (choice == 2) {
-			int zone;
-			float val;
-			cout << "Enter zone and fire value: ";
-			cin >> zone >> val;
+			int zone = readInt("  Zone: ");
+			float val = readFloat("  Fire value: ");
 			eq.enqueue(taskCounter, zone, val, 1);
 			taskCounter = taskCounter + 1;
 		}
@@ -176,22 +195,19 @@ void Menu::menuFireDetection() {
 			eq.dequeue();
 		}
 		else if (choice == 4) {
-			int zone;
-			cout << "Enter start zone for BFS (0-9): ";
-			cin >> zone;
+			int zone = readInt("  Start zone (0-9): ");
 			listGraph.bfsFireSpread(zone);
 		}
 		else if (choice == 5) {
-			float avail, req;
-			cout << "Enter available and required water: ";
-			cin >> avail >> req;
+			float avail = readFloat("  Available water: ");
+			float req = readFloat("  Required water: ");
 			rtree.checkWaterAvailability(avail, req);
 		}
 		else if (choice == 0) {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -201,41 +217,35 @@ void Menu::menuTaskScheduling() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "5. Task Scheduling System" << endl;
-		cout << "  5.1 Add Routine Task" << endl;
-		cout << "  5.2 Add Surveillance Task" << endl;
-		cout << "  5.3 Add Emergency Task" << endl;
-		cout << "  5.4 Process Tasks" << endl;
-		cout << "  5.5 Pause and Resume Tasks" << endl;
+		cout << "Task Scheduling System" << endl;
+		cout << "  1. Add routine task" << endl;
+		cout << "  2. Add surveillance task" << endl;
+		cout << "  3. Add emergency task" << endl;
+		cout << "  4. Process tasks" << endl;
+		cout << "  5. Pause / resume task" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
-			int zone;
-			float val;
-			cout << "Enter zone and value: ";
-			cin >> zone >> val;
+			int zone = readInt("  Zone: ");
+			float val = readFloat("  Value: ");
 			rq.enqueue(taskCounter, zone, val);
 			taskCounter = taskCounter + 1;
 		}
 		else if (choice == 2) {
-			int zone;
-			float val;
-			cout << "Enter zone and value: ";
-			cin >> zone >> val;
+			int zone = readInt("  Zone: ");
+			float val = readFloat("  Value: ");
 			sq.enqueue(taskCounter, zone, val);
 			taskCounter = taskCounter + 1;
 		}
 		else if (choice == 3) {
-			int zone, pri;
-			float val;
-			cout << "Enter zone value priority: ";
-			cin >> zone >> val >> pri;
+			int zone = readInt("  Zone: ");
+			float val = readFloat("  Value: ");
+			int pri = readInt("  Priority: ");
 			eq.enqueue(taskCounter, zone, val, pri);
 			taskCounter = taskCounter + 1;
 		}
 		else if (choice == 4) {
-			cout << "Processing emergency queue first..." << endl;
+			cout << "Processing emergency queue..." << endl;
 			eq.dequeue();
 			cout << "Processing routine queue..." << endl;
 			rq.dequeue();
@@ -243,13 +253,10 @@ void Menu::menuTaskScheduling() {
 			sq.dequeue();
 		}
 		else if (choice == 5) {
-			int tid;
-			cout << "Enter task ID to pause (0 to resume instead): ";
-			cin >> tid;
+			int tid = readInt("  Task ID to pause (0 to resume): ");
 			if (tid == 0) {
-				cout << "Enter task ID to resume: ";
-				cin >> tid;
-				dq.resumeTask(tid);
+				int rid = readInt("  Task ID to resume: ");
+				dq.resumeTask(rid);
 			}
 			else {
 				dq.pauseTask(tid);
@@ -259,7 +266,7 @@ void Menu::menuTaskScheduling() {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -269,53 +276,47 @@ void Menu::menuDecisionSystem() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "6. Decision System" << endl;
-		cout << "  6.1 Compute Risk Score" << endl;
-		cout << "  6.2 Zone-Level Decision Tree" << endl;
-		cout << "  6.3 Regional Decision Processing" << endl;
-		cout << "  6.4 Global Emergency Decision" << endl;
-		cout << "  6.5 Execute Final Action" << endl;
+		cout << "Decision System" << endl;
+		cout << "  1. Compute risk score" << endl;
+		cout << "  2. Zone-level decision" << endl;
+		cout << "  3. Regional decision" << endl;
+		cout << "  4. Global emergency decision" << endl;
+		cout << "  5. Execute final action" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
-			float f, s, t;
-			cout << "Enter fire smoke temp (0-1): ";
-			cin >> f >> s >> t;
+			float f = readFloat("  Fire (0-1): ");
+			float s = readFloat("  Smoke (0-1): ");
+			float t = readFloat("  Temp (0-1): ");
 			dtree.computeScore(f, s, t);
 		}
 		else if (choice == 2) {
-			float risk;
-			cout << "Enter risk score: ";
-			cin >> risk;
+			float risk = readFloat("  Risk score: ");
 			dtree.localDecision(risk);
 		}
 		else if (choice == 3) {
-			float rate;
-			cout << "Enter fire spread rate: ";
-			cin >> rate;
+			float rate = readFloat("  Fire spread rate: ");
 			dtree.regionalDecision(rate);
 		}
 		else if (choice == 4) {
-			float total, threshold;
-			cout << "Enter total risk and threshold: ";
-			cin >> total >> threshold;
+			float total = readFloat("  Total risk: ");
+			float threshold = readFloat("  Threshold: ");
 			dtree.globalDecision(total, threshold);
 		}
 		else if (choice == 5) {
-			float f, s, t;
-			cout << "Enter fire smoke temp for final action: ";
-			cin >> f >> s >> t;
+			float f = readFloat("  Fire (0-1): ");
+			float s = readFloat("  Smoke (0-1): ");
+			float t = readFloat("  Temp (0-1): ");
 			float score = dtree.computeScore(f, s, t);
 			dtree.localDecision(score);
-			dtree.regionalDecision(score - 0.1);
-			dtree.globalDecision(score, 0.6);
+			dtree.regionalDecision(score - 0.1f);
+			dtree.globalDecision(score, 0.6f);
 		}
 		else if (choice == 0) {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -325,16 +326,15 @@ void Menu::menuSpatialRouting() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "7. Spatial Routing System" << endl;
-		cout << "  7.1 Show Adjacency List Graph" << endl;
-		cout << "  7.2 Show Adjacency Matrix Graph" << endl;
-		cout << "  7.3 BFS Traversal" << endl;
-		cout << "  7.4 DFS Traversal" << endl;
-		cout << "  7.5 Compute Safe Path" << endl;
-		cout << "  7.6 Update Blocked Routes" << endl;
+		cout << "Spatial Routing System" << endl;
+		cout << "  1. Show adjacency list graph" << endl;
+		cout << "  2. Show adjacency matrix graph" << endl;
+		cout << "  3. BFS traversal" << endl;
+		cout << "  4. DFS traversal" << endl;
+		cout << "  5. Compute safe path" << endl;
+		cout << "  6. Block a route" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
 			listGraph.show();
 		}
@@ -342,29 +342,23 @@ void Menu::menuSpatialRouting() {
 			matGraph.show();
 		}
 		else if (choice == 3) {
-			int zone;
-			cout << "Enter start zone: ";
-			cin >> zone;
+			int zone = readInt("  Start zone: ");
 			listGraph.bfsFireSpread(zone);
 		}
 		else if (choice == 4) {
-			int zone;
-			cout << "Enter start zone: ";
-			cin >> zone;
+			int zone = readInt("  Start zone: ");
 			listGraph.dfsDeepAnalysis(zone);
 		}
 		else if (choice == 5) {
-			int from, to;
-			float danger;
-			cout << "Enter from to danger: ";
-			cin >> from >> to >> danger;
+			int from = readInt("  From zone: ");
+			int to = readInt("  To zone: ");
+			float danger = readFloat("  Danger factor: ");
 			listGraph.computePathCost(from, to, danger);
 			listGraph.computeFireAwareCost(from, to);
 		}
 		else if (choice == 6) {
-			int from, to;
-			cout << "Enter from and to zone to block: ";
-			cin >> from >> to;
+			int from = readInt("  From zone: ");
+			int to = readInt("  To zone: ");
 			listGraph.blockRoute(from, to);
 			matGraph.blockRoute(from, to);
 		}
@@ -372,7 +366,7 @@ void Menu::menuSpatialRouting() {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -382,26 +376,23 @@ void Menu::menuHashAccess() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "8. Hash-Based Fast Access" << endl;
-		cout << "  8.1 Insert Data (Hash Table)" << endl;
-		cout << "  8.2 Retrieve Data" << endl;
-		cout << "  8.3 Handle Collisions (H2 chain insert)" << endl;
-		cout << "  8.4 Update Cache" << endl;
-		cout << "  8.5 View Index Table" << endl;
+		cout << "Hash-Based Fast Access" << endl;
+		cout << "  1. Insert into hash table" << endl;
+		cout << "  2. Retrieve by key" << endl;
+		cout << "  3. Chain insert (collision table)" << endl;
+		cout << "  4. Update cache" << endl;
+		cout << "  5. View all tables" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
-			int key;
-			float t, s, h;
-			cout << "Enter key temp smoke humidity: ";
-			cin >> key >> t >> s >> h;
+			int key = readInt("  Key: ");
+			float t = readFloat("  Temp: ");
+			float s = readFloat("  Smoke: ");
+			float h = readFloat("  Humidity: ");
 			h1.insert(key, t, s, h);
 		}
 		else if (choice == 2) {
-			int key;
-			cout << "Enter zone key: ";
-			cin >> key;
+			int key = readInt("  Zone key: ");
 			double t, s, h;
 			bool found = h1.retrieve(key, t, s, h);
 			if (found == false) {
@@ -409,18 +400,18 @@ void Menu::menuHashAccess() {
 			}
 		}
 		else if (choice == 3) {
-			int key;
-			float t, s, h;
-			cout << "Enter key temp smoke humidity for chain table: ";
-			cin >> key >> t >> s >> h;
+			int key = readInt("  Key: ");
+			float t = readFloat("  Temp: ");
+			float s = readFloat("  Smoke: ");
+			float h = readFloat("  Humidity: ");
 			h2.insert(key, t, s, h);
 			h2.show();
 		}
 		else if (choice == 4) {
-			int key;
-			float t, s, h;
-			cout << "Enter key temp smoke humidity to cache: ";
-			cin >> key >> t >> s >> h;
+			int key = readInt("  Key: ");
+			float t = readFloat("  Temp: ");
+			float s = readFloat("  Smoke: ");
+			float h = readFloat("  Humidity: ");
 			h3.store(key, t, s, h);
 			double dt, ds, dh;
 			h3.fetch(key, dt, ds, dh);
@@ -434,7 +425,7 @@ void Menu::menuHashAccess() {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -444,36 +435,33 @@ void Menu::menuMonitoring() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "9. System Monitoring" << endl;
-		cout << "  9.1 Monitor System Load" << endl;
-		cout << "  9.2 Track Execution Time" << endl;
-		cout << "  9.3 Detect Bottlenecks" << endl;
-		cout << "  9.4 Optimize Performance" << endl;
-		cout << "  9.5 View System Health" << endl;
+		cout << "System Monitoring" << endl;
+		cout << "  1. Monitor system load" << endl;
+		cout << "  2. Track execution time" << endl;
+		cout << "  3. Detect bottlenecks" << endl;
+		cout << "  4. Optimize performance" << endl;
+		cout << "  5. View system health" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
-			int tasks, cap;
-			cout << "Enter active tasks and capacity: ";
-			cin >> tasks >> cap;
+			int tasks = readInt("  Active tasks: ");
+			int cap = readInt("  Capacity: ");
 			monitor.setActiveTasks(tasks);
 			monitor.setCapacity(cap);
 			monitor.computeLoad();
 		}
 		else if (choice == 2) {
-			float start, finish;
-			cout << "Enter start and finish time (ms): ";
-			cin >> start >> finish;
+			float start = readFloat("  Start time (ms): ");
+			float finish = readFloat("  Finish time (ms): ");
 			monitor.setStartTime(start);
 			monitor.setFinishTime(finish);
 			monitor.computeLatency();
 		}
 		else if (choice == 3) {
 			char mod[50];
-			float mload;
-			cout << "Enter module name and its load (0-1): ";
-			cin >> mod >> mload;
+			cout << "  Module name: ";
+			cin >> mod;
+			float mload = readFloat("  Load (0-1): ");
 			monitor.detectBottleneck(mod, mload);
 		}
 		else if (choice == 4) {
@@ -486,7 +474,7 @@ void Menu::menuMonitoring() {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -496,16 +484,15 @@ void Menu::menuScenarios() {
 	int again = 1;
 	while (again == 1) {
 		cout << endl;
-		cout << "10. Scenario Simulation" << endl;
-		cout << "  10.1 Cascading Fire Scenario" << endl;
-		cout << "  10.2 Sensor Failure Scenario" << endl;
-		cout << "  10.3 Multi-Factor Anomaly Scenario" << endl;
-		cout << "  10.4 System Overload Scenario" << endl;
-		cout << "  10.5 Global Emergency Scenario" << endl;
-		cout << "  10.6 Run Full Simulation" << endl;
+		cout << "Scenario Simulation" << endl;
+		cout << "  1. Cascading fire" << endl;
+		cout << "  2. Sensor failure" << endl;
+		cout << "  3. Multi-factor anomaly" << endl;
+		cout << "  4. System overload" << endl;
+		cout << "  5. Global emergency" << endl;
+		cout << "  6. Full simulation" << endl;
 		cout << "  0. Back" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		choice = readInt("Choice: ");
 		if (choice == 1) {
 			runner.runCascadingFire();
 		}
@@ -528,7 +515,7 @@ void Menu::menuScenarios() {
 			again = 0;
 		}
 		else {
-			cout << "Invalid choice." << endl;
+			cout << "No such option." << endl;
 		}
 	}
 }
@@ -537,20 +524,19 @@ void Menu::run() {
 	int choice = -1;
 	while (choice != 0) {
 		cout << endl;
-		cout << "IFAMDS - Intelligent Forest Advisory System" << endl;
-		cout << "1.  Environmental Data" << endl;
-		cout << "2.  Forest Grid Status" << endl;
-		cout << "3.  Event Memory System" << endl;
-		cout << "4.  Fire Detection and Control" << endl;
-		cout << "5.  Task Scheduling System" << endl;
-		cout << "6.  Decision System" << endl;
-		cout << "7.  Spatial Routing System" << endl;
-		cout << "8.  Hash-Based Fast Access" << endl;
-		cout << "9.  System Monitoring" << endl;
-		cout << "10. Scenario Simulation" << endl;
-		cout << "0.  Exit System" << endl;
-		cout << "Choice: ";
-		cin >> choice;
+		cout << "IFAMDS - Forest Advisory System" << endl;
+		cout << "  1.  Environmental data" << endl;
+		cout << "  2.  Forest grid status" << endl;
+		cout << "  3.  Event memory" << endl;
+		cout << "  4.  Fire detection and control" << endl;
+		cout << "  5.  Task scheduling" << endl;
+		cout << "  6.  Decision system" << endl;
+		cout << "  7.  Spatial routing" << endl;
+		cout << "  8.  Hash-based fast access" << endl;
+		cout << "  9.  System monitoring" << endl;
+		cout << "  10. Scenario simulation" << endl;
+		cout << "  0.  Exit" << endl;
+		choice = readInt("Choice: ");
 
 		switch (choice) {
 		case 1:
@@ -584,10 +570,10 @@ void Menu::run() {
 			menuScenarios();
 			break;
 		case 0:
-			cout << "Exiting IFAMDS. Goodbye." << endl;
+			cout << "Shutting down IFAMDS." << endl;
 			break;
 		default:
-			cout << "Invalid choice. Try again." << endl;
+			cout << "No such option." << endl;
 			break;
 		}
 	}

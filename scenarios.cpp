@@ -7,41 +7,41 @@ void ScenarioRunner::runCascadingFire() {
 	cout << "SCENARIO 1: Cascading Fire and Resource Conflict Resolution" << endl;
 
 	Baseline base;
-	base.set(3, 25.0, 60.0, 0.0);
-	base.set(4, 25.0, 60.0, 0.0);
-	base.set(6, 25.0, 60.0, 0.0);
+	base.set(3, 25.0f, 60.0f, 0.0f);
+	base.set(4, 25.0f, 60.0f, 0.0f);
+	base.set(6, 25.0f, 60.0f, 0.0f);
 	cout << "Baseline set for zones 3, 4, 6." << endl;
 
 	SensorStream stream;
-	stream.add(75.0, 85.0, 15.0);
-	stream.add(65.0, 78.0, 18.0);
-	stream.add(55.0, 60.0, 25.0);
-	stream.checkAnomalies(25.0, 0.0, 60.0);
+	stream.add(75.0f, 85.0f, 15.0f);
+	stream.add(65.0f, 78.0f, 18.0f);
+	stream.add(55.0f, 60.0f, 25.0f);
+	stream.checkAnomalies(25.0f, 0.0f, 60.0f);
 
 	SinglyList rawEvents;
-	rawEvents.insert(75.0, 1, 3);
-	rawEvents.insert(65.0, 2, 4);
-	rawEvents.insert(55.0, 3, 6);
+	rawEvents.insert(75.0f, 1, 3);
+	rawEvents.insert(65.0f, 2, 4);
+	rawEvents.insert(55.0f, 3, 6);
 	cout << "Raw event stream:" << endl;
 	rawEvents.display();
 
-	bool noisy = rawEvents.removeNoise(30.0);
+	bool noisy = rawEvents.removeNoise(30.0f);
 	if (noisy) {
 		cout << "Noise removed from stream." << endl;
 	}
-	rawEvents.filterAnomalies(25.0, 20.0);
+	rawEvents.filterAnomalies(25.0f, 20.0f);
 
 	DoublyList corrections;
-	corrections.insertBack(75.0, 1, 3);
-	corrections.insertBack(65.0, 2, 4);
-	corrections.insertBack(55.0, 3, 6);
-	corrections.correctForward(2, 60.0);
+	corrections.insertBack(75.0f, 1, 3);
+	corrections.insertBack(65.0f, 2, 4);
+	corrections.insertBack(55.0f, 3, 6);
+	corrections.correctForward(2, 60.0f);
 	corrections.displayForward();
 
 	EmergencyQueue eq;
-	eq.enqueue(1, 3, 75.0, 1);
-	eq.enqueue(2, 4, 65.0, 2);
-	eq.enqueue(3, 6, 55.0, 3);
+	eq.enqueue(1, 3, 75.0f, 1);
+	eq.enqueue(2, 4, 65.0f, 2);
+	eq.enqueue(3, 6, 55.0f, 3);
 	eq.display();
 	eq.dequeue();
 
@@ -56,18 +56,18 @@ void ScenarioRunner::runCascadingFire() {
 
 	IncidentTree itree;
 	itree.buildDefault();
-	itree.computeFireLevel(0.4, 75.0, 0.3, 85.0);
+	itree.computeFireLevel(0.4f, 75.0f, 0.3f, 85.0f);
 
 	DecisionTree dtree;
 	dtree.buildDefault();
-	float score = dtree.computeScore(0.9, 0.85, 0.75);
+	float score = dtree.computeScore(0.9f, 0.85f, 0.75f);
 	dtree.localDecision(score);
-	dtree.regionalDecision(0.7);
+	dtree.regionalDecision(0.7f);
 
 	ResourceTree rtree;
 	rtree.buildDefault();
-	rtree.checkWaterAvailability(60.0, 100.0);
-	rtree.computePriority(0.9, 0.8);
+	rtree.checkWaterAvailability(60.0f, 100.0f);
+	rtree.computePriority(0.9f, 0.8f);
 
 	PrimaryIndexTable table(20);
 	table.insert(3, 75.0, 85.0, 15.0);
@@ -84,32 +84,32 @@ void ScenarioRunner::runSensorFailure() {
 	cout << "SCENARIO 2: Sensor Failure and System Reconstruction" << endl;
 
 	SensorStream stream;
-	stream.add(25.0, 5.0, 60.0);
-	stream.add(-1.0, 5.0, 60.0);
-	stream.add(26.0, 5.0, 60.0);
-	stream.add(200.0, 5.0, 60.0);
-	stream.add(27.0, 6.0, 58.0);
+	stream.add(25.0f, 5.0f, 60.0f);
+	stream.add(-1.0f, 5.0f, 60.0f);
+	stream.add(26.0f, 5.0f, 60.0f);
+	stream.add(200.0f, 5.0f, 60.0f);
+	stream.add(27.0f, 6.0f, 58.0f);
 	cout << "Raw sensor stream before validation:" << endl;
 	stream.show();
-	stream.checkAnomalies(25.0, 0.0, 60.0);
+	stream.checkAnomalies(25.0f, 0.0f, 60.0f);
 
 	ForestGrid grid;
-	grid.setCell(1, 1, 25.0, 5.0);
-	grid.setCell(1, 3, 27.0, 5.0);
-	grid.setCell(0, 2, 26.0, 5.0);
-	grid.setCell(2, 2, 28.0, 5.0);
+	grid.setCell(1, 1, 25.0f, 5.0f);
+	grid.setCell(1, 3, 27.0f, 5.0f);
+	grid.setCell(0, 2, 26.0f, 5.0f);
+	grid.setCell(2, 2, 28.0f, 5.0f);
 	cout << "Zone 2 sensor failed. Interpolating..." << endl;
 	grid.interpolate(1, 2);
 	grid.show();
 
 	DoublyList history;
-	history.insertBack(25.0, 1, 2);
-	history.insertBack(26.0, 2, 2);
-	history.insertBack(27.0, 3, 2);
+	history.insertBack(25.0f, 1, 2);
+	history.insertBack(26.0f, 2, 2);
+	history.insertBack(27.0f, 3, 2);
 	cout << "Last valid history (backward):" << endl;
 	history.displayBackward();
-	history.correctBackward(2, 25.5);
-	history.synchronize(26.0);
+	history.correctBackward(2, 25.5f);
+	history.synchronize(26.0f);
 	history.displayForward();
 
 	CollisionTable colTable(10);
@@ -127,40 +127,40 @@ void ScenarioRunner::runMultiFactorAnomaly() {
 	cout << "SCENARIO 3: Multi-Factor Anomaly Escalation System" << endl;
 
 	SinglyList wildlifeEvents;
-	wildlifeEvents.insert(0.8, 1, 5);
-	wildlifeEvents.insert(0.9, 2, 5);
+	wildlifeEvents.insert(0.8f, 1, 5);
+	wildlifeEvents.insert(0.9f, 2, 5);
 	cout << "Wildlife events:" << endl;
 	wildlifeEvents.display();
 
 	SinglyList fireEvents;
-	fireEvents.insert(70.0, 1, 7);
-	fireEvents.insert(80.0, 2, 7);
+	fireEvents.insert(70.0f, 1, 7);
+	fireEvents.insert(80.0f, 2, 7);
 	cout << "Fire events:" << endl;
 	fireEvents.display();
 
 	SinglyList humanEvents;
-	humanEvents.insert(0.7, 1, 9);
+	humanEvents.insert(0.7f, 1, 9);
 	cout << "Human events:" << endl;
 	humanEvents.display();
 
 	DecisionQueue dq;
-	dq.enqueue(1, 5, 0.85, 2);
-	dq.enqueue(2, 7, 75.0, 1);
-	dq.enqueue(3, 9, 0.7, 2);
+	dq.enqueue(1, 5, 0.85f, 2);
+	dq.enqueue(2, 7, 75.0f, 1);
+	dq.enqueue(3, 9, 0.7f, 2);
 	dq.display();
 
 	IncidentTree itree;
 	itree.buildDefault();
-	itree.computeFireLevel(0.4, 80.0, 0.3, 75.0);
-	itree.computeHumanRisk(0.7, 0.9);
-	itree.classify(0.85, 0.6);
+	itree.computeFireLevel(0.4f, 80.0f, 0.3f, 75.0f);
+	itree.computeHumanRisk(0.7f, 0.9f);
+	itree.classify(0.85f, 0.6f);
 
 	DecisionTree dtree;
 	dtree.buildDefault();
-	float score = dtree.computeScore(0.85, 0.75, 0.8);
+	float score = dtree.computeScore(0.85f, 0.75f, 0.8f);
 	dtree.localDecision(score);
-	dtree.regionalDecision(0.6);
-	dtree.globalDecision(score, 0.6);
+	dtree.regionalDecision(0.6f);
+	dtree.globalDecision(score, 0.6f);
 
 	AdjMatrixGraph mg(10);
 	mg.addEdge(5, 7, 2.0);
@@ -182,12 +182,12 @@ void ScenarioRunner::runSystemOverload() {
 
 	int i = 1;
 	while (i <= 5) {
-		rq.enqueue(i, i, 20.0 + i);
-		sq.enqueue(i + 10, i, 30.0 + i);
+		rq.enqueue(i, i, 20.0f + i);
+		sq.enqueue(i + 10, i, 30.0f + i);
 		i = i + 1;
 	}
-	eq.enqueue(100, 3, 80.0, 1);
-	eq.enqueue(101, 4, 75.0, 2);
+	eq.enqueue(100, 3, 80.0f, 1);
+	eq.enqueue(101, 4, 75.0f, 2);
 
 	cout << "Routine queue:" << endl;
 	rq.display();
@@ -199,9 +199,9 @@ void ScenarioRunner::runSystemOverload() {
 	eq.dequeue();
 
 	DecisionQueue dq;
-	dq.enqueue(200, 1, 25.0, 3);
-	dq.enqueue(201, 2, 26.0, 3);
-	dq.enqueue(202, 3, 80.0, 1);
+	dq.enqueue(200, 1, 25.0f, 3);
+	dq.enqueue(201, 2, 26.0f, 3);
+	dq.enqueue(202, 3, 80.0f, 1);
 	dq.pauseTask(200);
 	dq.pauseTask(201);
 	cout << "Decision queue with paused low-priority tasks:" << endl;
@@ -217,13 +217,13 @@ void ScenarioRunner::runSystemOverload() {
 	cache.show();
 
 	SystemMonitor mon;
-	mon.setStartTime(0.0);
-	mon.setFinishTime(12.0);
+	mon.setStartTime(0.0f);
+	mon.setFinishTime(12.0f);
 	mon.computeLatency();
 	mon.setActiveTasks(90);
 	mon.setCapacity(100);
 	mon.computeLoad();
-	mon.detectBottleneck("QueueLayer", 0.9);
+	mon.detectBottleneck("QueueLayer", 0.9f);
 	mon.optimizePerformance();
 
 	dq.resumeTask(200);
@@ -247,7 +247,7 @@ void ScenarioRunner::runGlobalEmergency() {
 	while (r < 5) {
 		int c = 0;
 		while (c < 5) {
-			grid.setCell(r, c, 25.0 + r * 2.0, r * 5.0);
+			grid.setCell(r, c, 25.0f + r * 2.0f, r * 5.0f);
 			c = c + 1;
 		}
 		r = r + 1;
@@ -255,14 +255,14 @@ void ScenarioRunner::runGlobalEmergency() {
 	grid.findBoundaries();
 
 	DoublyList globalHistory;
-	globalHistory.insertBack(25.0, 1, 1);
-	globalHistory.insertBack(45.0, 2, 2);
-	globalHistory.insertBack(70.0, 3, 3);
-	globalHistory.insertBack(80.0, 4, 4);
+	globalHistory.insertBack(25.0f, 1, 1);
+	globalHistory.insertBack(45.0f, 2, 2);
+	globalHistory.insertBack(70.0f, 3, 3);
+	globalHistory.insertBack(80.0f, 4, 4);
 	cout << "Global event history:" << endl;
 	globalHistory.displayForward();
-	globalHistory.correctBackward(2, 26.0);
-	globalHistory.synchronize(30.0);
+	globalHistory.correctBackward(2, 26.0f);
+	globalHistory.synchronize(30.0f);
 	globalHistory.displayForward();
 
 	AdjListGraph graph(10);
@@ -281,21 +281,21 @@ void ScenarioRunner::runGlobalEmergency() {
 
 	DecisionTree dtree;
 	dtree.buildDefault();
-	float score = dtree.computeScore(0.9, 0.8, 0.85);
-	dtree.globalDecision(score, 0.6);
+	float score = dtree.computeScore(0.9f, 0.8f, 0.85f);
+	dtree.globalDecision(score, 0.6f);
 
 	EmergencyQueue eq;
-	eq.enqueue(1, 1, 0.3, 3);
-	eq.enqueue(2, 2, 0.6, 2);
-	eq.enqueue(3, 3, 0.9, 1);
-	eq.enqueue(4, 4, 0.7, 1);
-	eq.enqueue(5, 5, 0.5, 2);
+	eq.enqueue(1, 1, 0.3f, 3);
+	eq.enqueue(2, 2, 0.6f, 2);
+	eq.enqueue(3, 3, 0.9f, 1);
+	eq.enqueue(4, 4, 0.7f, 1);
+	eq.enqueue(5, 5, 0.5f, 2);
 	eq.display();
 
 	ResourceTree rtree;
 	rtree.buildDefault();
-	rtree.checkWaterAvailability(50.0, 150.0);
-	rtree.computePriority(0.9, 0.95);
+	rtree.checkWaterAvailability(50.0f, 150.0f);
+	rtree.computePriority(0.9f, 0.95f);
 
 	PrimaryIndexTable table(20);
 	table.insert(1, 25.0, 10.0, 55.0);
@@ -306,21 +306,21 @@ void ScenarioRunner::runGlobalEmergency() {
 	table.show();
 
 	CircularList cloop;
-	cloop.insert(0.3, 1, 1);
-	cloop.insert(0.6, 2, 2);
-	cloop.insert(0.9, 3, 3);
-	cloop.insert(0.7, 4, 4);
-	cloop.insert(0.5, 5, 5);
-	cloop.monitorEmergency(0.5, 2);
+	cloop.insert(0.3f, 1, 1);
+	cloop.insert(0.6f, 2, 2);
+	cloop.insert(0.9f, 3, 3);
+	cloop.insert(0.7f, 4, 4);
+	cloop.insert(0.5f, 5, 5);
+	cloop.monitorEmergency(0.5f, 2);
 
 	SystemMonitor mon;
-	mon.setStartTime(0.0);
-	mon.setFinishTime(8.0);
+	mon.setStartTime(0.0f);
+	mon.setFinishTime(8.0f);
 	mon.computeLatency();
 	mon.setActiveTasks(95);
 	mon.setCapacity(100);
 	mon.computeLoad();
-	mon.detectBottleneck("GraphLayer", 0.9);
+	mon.detectBottleneck("GraphLayer", 0.9f);
 	mon.viewSystemHealth();
 
 	cout << "Scenario 5 complete." << endl;
