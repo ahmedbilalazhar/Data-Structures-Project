@@ -55,7 +55,7 @@ Menu::Menu() : listGraph(10), matGraph(10), h1(20), h2(10), h3(10) {
 
 // [Test] Environmental - adds readings, checks baseline, filters noise, scans terrain
 void Menu::testEnvironmental() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] Environmental Data" << endl;
 	cout << endl;
 
@@ -139,6 +139,11 @@ void Menu::menuEnvironmental() {
 			float s = readFloat("  Smoke level (0-100): ");
 			float h = readFloat("  Humidity (%): ");
 			stream.add(t, s, h);
+			// FIX (Bug 1): rawList was never populated from Menu 1, making
+			// Option 6 (noise filter) always run on an empty list.
+			// Now every sensor reading added here is also inserted into rawList.
+			rawList.insert(t, eventCounter, 0);
+			eventCounter = eventCounter + 1;
 		}
 		else if (choice == 2) {
 			stream.show();
@@ -197,7 +202,7 @@ void Menu::menuEnvironmental() {
 
 // [Test] Forest Grid - fills grid, interpolates missing cell, detects boundaries
 void Menu::testForestGrid() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] Forest Grid Status" << endl;
 	cout << endl;
 
@@ -286,7 +291,7 @@ void Menu::menuForestGrid() {
 
 // [Test] Event Memory - stores events, traverses both directions, corrects, monitors loop
 void Menu::testEventMemory() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] Event Memory System" << endl;
 	cout << endl;
 
@@ -426,7 +431,7 @@ void Menu::menuEventMemory() {
 
 // [Test] Fire Detection - score, alert queue enqueue/dequeue, BFS spread, resource check
 void Menu::testFireDetection() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] Fire Detection and Control" << endl;
 	cout << endl;
 
@@ -554,7 +559,7 @@ void Menu::menuFireDetection() {
 
 // [Test] Task Scheduling - fills all four queues, pauses tasks, processes, resumes
 void Menu::testTaskScheduling() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] Task Scheduling System" << endl;
 	cout << endl;
 
@@ -710,7 +715,7 @@ void Menu::menuTaskScheduling() {
 
 // [Test] Decision System - score, local/regional/global decisions, terrain, human risk
 void Menu::testDecisionSystem() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] Decision System" << endl;
 	cout << endl;
 
@@ -857,7 +862,7 @@ void Menu::menuDecisionSystem() {
 
 // [Test] Spatial Routing - adds edges, runs BFS and DFS on both graphs, blocks a route
 void Menu::testSpatialRouting() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] Spatial Routing System" << endl;
 	cout << endl;
 
@@ -1003,7 +1008,7 @@ void Menu::menuSpatialRouting() {
 
 // [Test] Hash Access - inserts into H1 and H2, triggers collision, caches, evicts
 void Menu::testHashAccess() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] Hash-Based Fast Access" << endl;
 	cout << endl;
 
@@ -1146,7 +1151,7 @@ void Menu::menuHashAccess() {
 
 // [Test] System Monitoring - sets load, latency, detects bottleneck, optimizes, resets
 void Menu::testMonitoring() {
-    cout << endl;
+	cout << endl;
 	cout << "[Test] System Monitoring" << endl;
 	cout << endl;
 

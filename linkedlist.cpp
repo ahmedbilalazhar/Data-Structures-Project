@@ -111,13 +111,14 @@ bool SinglyList::removeNoise(float delta) {
 			diff = diff * -1;
 		}
 		if (diff >= delta) {
-			cout << "  Noise removed: Time=" << cur->time << " Zone=" << cur->zone << " Value=" << cur->value << endl;
+			cout << "  Noise removed: ..." << endl;
 			Node* temp = cur;
 			prev->next = cur->next;
 			cur = cur->next;
 			delete temp;
 			size = size - 1;
 			removed = true;
+			prevVal = prev->value;    
 		}
 		else {
 			prevVal = cur->value;

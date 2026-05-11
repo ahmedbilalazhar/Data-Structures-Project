@@ -1,8 +1,6 @@
 #include "graph.h"
 
-// ============================================================
 // AdjNode
-// ============================================================
 
 AdjNode::AdjNode(int z, double w) {
 	zone = z;
@@ -10,9 +8,7 @@ AdjNode::AdjNode(int z, double w) {
 	next = NULL;
 }
 
-// ============================================================
-// AdjListGraph — G1
-// ============================================================
+// AdjListGraph - G1
 
 AdjListGraph::AdjListGraph(int maxZ) {
 	maxZones = maxZ;
@@ -51,7 +47,7 @@ AdjListGraph::~AdjListGraph() {
 	delete[] dfsStack;
 }
 
-// O(1) — adds a zone to the graph (just ensures index is valid)
+// O(1) - adds a zone to the graph (just ensures index is valid)
 void AdjListGraph::addZone(int zoneId) {
 	if (zoneId < 0 || zoneId >= maxZones) {
 		cout << "Zone ID " << zoneId << " is out of range." << endl;
@@ -59,10 +55,10 @@ void AdjListGraph::addZone(int zoneId) {
 	}
 	zoneCount = zoneCount + 1;
 	cout << "Zone " << zoneId << " registered in adjacency list graph." << endl;
-   cout << endl;
+	cout << endl;
 }
 
-// O(1) — adds undirected edge between two zones
+// O(1) - adds undirected edge between two zones
 void AdjListGraph::addEdge(int from, int to, double distance) {
 	if (from < 0 || from >= maxZones || to < 0 || to >= maxZones) {
 		cout << "Invalid zone IDs for edge." << endl;
@@ -79,10 +75,10 @@ void AdjListGraph::addEdge(int from, int to, double distance) {
 
 	cout << "Edge added between Zone " << from << " and Zone " << to
 		<< " with distance " << distance << endl;
-   cout << endl;
+	cout << endl;
 }
 
-// O(1) — updates the fire level for a zone
+// O(1) - updates the fire level for a zone
 void AdjListGraph::setFireLevel(int zone, double level) {
 	if (zone < 0 || zone >= maxZones) {
 		cout << "Invalid zone ID." << endl;
@@ -90,7 +86,7 @@ void AdjListGraph::setFireLevel(int zone, double level) {
 	}
 	fireLevel[zone] = level;
 	cout << "Fire level for Zone " << zone << " set to " << level << endl;
-   cout << endl;
+	cout << endl;
 }
 
 // BFS helper: enqueue
@@ -119,7 +115,8 @@ int AdjListGraph::dfsPop() {
 	return val;
 }
 
-// O(V + E) — BFS from startZone, simulates fire spread level by level
+// O(V + E) - BFS from startZone, simulates fire spread level by level
+// FIX: now skips edges with weight >= 9000 (blocked routes) to match matrix graph behavior
 void AdjListGraph::bfsFireSpread(int startZone) {
 	if (startZone < 0 || startZone >= maxZones) {
 		cout << "Invalid start zone." << endl;
@@ -146,7 +143,7 @@ void AdjListGraph::bfsFireSpread(int startZone) {
 		AdjNode* neighbor = heads[cur];
 		while (neighbor != NULL) {
 			int z = neighbor->zone;
-			if (visited[z] == false) {
+			if (visited[z] == false && neighbor->weight < 9000.0) {
 				visited[z] = true;
 				bfsEnqueue(z);
 				cout << "  Fire may spread from Zone " << cur
@@ -158,10 +155,11 @@ void AdjListGraph::bfsFireSpread(int startZone) {
 	}
 
 	cout << "BFS traversal complete." << endl;
-   cout << endl;
+	cout << endl;
 }
 
-// O(V + E) — DFS from startZone, deep path analysis
+// O(V + E) - DFS from startZone, deep path analysis
+// FIX: now skips edges with weight >= 9000 (blocked routes) to match matrix graph behavior
 void AdjListGraph::dfsDeepAnalysis(int startZone) {
 	if (startZone < 0 || startZone >= maxZones) {
 		cout << "Invalid start zone." << endl;
@@ -189,7 +187,7 @@ void AdjListGraph::dfsDeepAnalysis(int startZone) {
 			AdjNode* neighbor = heads[cur];
 			while (neighbor != NULL) {
 				int z = neighbor->zone;
-				if (visited[z] == false) {
+				if (visited[z] == false && neighbor->weight < 9000.0) {
 					dfsPush(z);
 				}
 				neighbor = neighbor->next;
@@ -198,10 +196,10 @@ void AdjListGraph::dfsDeepAnalysis(int startZone) {
 	}
 
 	cout << "DFS traversal complete." << endl;
-   cout << endl;
+	cout << endl;
 }
 
-// O(E) — simple path cost: distance + danger value for a direct edge
+// O(E) - simple path cost: distance + danger value for a direct edge
 double AdjListGraph::computePathCost(int from, int to, double dangerValue) {
 	AdjNode* cur = heads[from];
 	while (cur != NULL) {
@@ -211,17 +209,17 @@ double AdjListGraph::computePathCost(int from, int to, double dangerValue) {
 				<< ": distance=" << cur->weight
 				<< " + danger=" << dangerValue
 				<< " = " << cost << endl;
-        cout << endl;
+			cout << endl;
 			return cost;
 		}
 		cur = cur->next;
 	}
 	cout << "No direct edge from Zone " << from << " to Zone " << to << endl;
-    cout << endl;
+	cout << endl;
 	return -1.0;
 }
 
-// O(E) — fire-aware cost: distance * (1 + fireLevel of destination)
+// O(E) - fire-aware cost: distance * (1 + fireLevel of destination)
 double AdjListGraph::computeFireAwareCost(int from, int to) {
 	AdjNode* cur = heads[from];
 	while (cur != NULL) {
@@ -230,17 +228,17 @@ double AdjListGraph::computeFireAwareCost(int from, int to) {
 			cout << "Fire-aware path cost from Zone " << from << " to Zone " << to
 				<< ": " << cur->weight << " * (1 + " << fireLevel[to]
 				<< ") = " << cost << endl;
-        cout << endl;
+			cout << endl;
 			return cost;
 		}
 		cur = cur->next;
 	}
 	cout << "No direct edge from Zone " << from << " to Zone " << to << endl;
-    cout << endl;
+	cout << endl;
 	return -1.0;
 }
 
-// O(E) — blocks a route by setting its weight to a very high value (9999)
+// O(E) - blocks a route by setting its weight to a very high value (9999)
 void AdjListGraph::blockRoute(int from, int to) {
 	AdjNode* cur = heads[from];
 	while (cur != NULL) {
@@ -260,10 +258,10 @@ void AdjListGraph::blockRoute(int from, int to) {
 
 	cout << "Route between Zone " << from << " and Zone " << to
 		<< " has been blocked." << endl;
-   cout << endl;
+	cout << endl;
 }
 
-// O(V + E) — prints all zones and their neighbor lists
+// O(V + E) - prints all zones and their neighbor lists
 void AdjListGraph::show() {
 	cout << "Adjacency List Graph (G1):" << endl;
 	for (int i = 0; i < maxZones; i++) {
@@ -281,12 +279,10 @@ void AdjListGraph::show() {
 			cout << endl;
 		}
 	}
-   cout << endl;
+	cout << endl;
 }
 
-// ============================================================
-// AdjMatrixGraph — G2
-// ============================================================
+// AdjMatrixGraph - G2
 
 AdjMatrixGraph::AdjMatrixGraph(int maxZ) {
 	maxZones = maxZ;
@@ -324,7 +320,7 @@ AdjMatrixGraph::~AdjMatrixGraph() {
 	delete[] dfsStack;
 }
 
-// O(1) — registers a zone (validates range)
+// O(1) - registers a zone (validates range)
 void AdjMatrixGraph::addZone(int zoneId) {
 	if (zoneId < 0 || zoneId >= maxZones) {
 		cout << "Zone ID " << zoneId << " is out of range." << endl;
@@ -334,7 +330,7 @@ void AdjMatrixGraph::addZone(int zoneId) {
 	cout << "Zone " << zoneId << " registered in adjacency matrix graph." << endl;
 }
 
-// O(1) — sets matrix[from][to] and matrix[to][from] to distance
+// O(1) - sets matrix[from][to] and matrix[to][from] to distance
 void AdjMatrixGraph::addEdge(int from, int to, double distance) {
 	if (from < 0 || from >= maxZones || to < 0 || to >= maxZones) {
 		cout << "Invalid zone IDs for edge." << endl;
@@ -347,7 +343,7 @@ void AdjMatrixGraph::addEdge(int from, int to, double distance) {
 		<< " with distance " << distance << endl;
 }
 
-// O(1) — sets fire level of a zone
+// O(1) - sets fire level of a zone
 void AdjMatrixGraph::setFireLevel(int zone, double level) {
 	if (zone < 0 || zone >= maxZones) {
 		cout << "Invalid zone ID." << endl;
@@ -379,7 +375,7 @@ int AdjMatrixGraph::dfsPop() {
 	return val;
 }
 
-// O(V^2) — BFS on matrix, shows fire spread zone by zone
+// O(V^2) - BFS on matrix, shows fire spread zone by zone
 void AdjMatrixGraph::bfsFireSpread(int startZone) {
 	if (startZone < 0 || startZone >= maxZones) {
 		cout << "Invalid start zone." << endl;
@@ -416,7 +412,7 @@ void AdjMatrixGraph::bfsFireSpread(int startZone) {
 	cout << "BFS traversal complete." << endl;
 }
 
-// O(V^2) — DFS on matrix, deep single-path analysis
+// O(V^2) - DFS on matrix, deep single-path analysis
 void AdjMatrixGraph::dfsDeepAnalysis(int startZone) {
 	if (startZone < 0 || startZone >= maxZones) {
 		cout << "Invalid start zone." << endl;
@@ -451,10 +447,10 @@ void AdjMatrixGraph::dfsDeepAnalysis(int startZone) {
 	}
 
 	cout << "DFS traversal complete." << endl;
-   cout << endl;
+	cout << endl;
 }
 
-// O(V) — simple path cost: matrix[from][to] + dangerValue
+// O(V) - simple path cost: matrix[from][to] + dangerValue
 double AdjMatrixGraph::computePathCost(int from, int to, double dangerValue) {
 	if (from < 0 || from >= maxZones || to < 0 || to >= maxZones) {
 		cout << "Invalid zone IDs." << endl;
@@ -472,7 +468,7 @@ double AdjMatrixGraph::computePathCost(int from, int to, double dangerValue) {
 	return cost;
 }
 
-// O(V) — fire-aware cost using matrix edge weight
+// O(V) - fire-aware cost using matrix edge weight
 double AdjMatrixGraph::computeFireAwareCost(int from, int to) {
 	if (from < 0 || from >= maxZones || to < 0 || to >= maxZones) {
 		cout << "Invalid zone IDs." << endl;
@@ -489,7 +485,7 @@ double AdjMatrixGraph::computeFireAwareCost(int from, int to) {
 	return cost;
 }
 
-// O(1) — blocks edge by zeroing matrix cell
+// O(1) - blocks edge by zeroing matrix cell
 void AdjMatrixGraph::blockRoute(int from, int to) {
 	if (from < 0 || from >= maxZones || to < 0 || to >= maxZones) {
 		cout << "Invalid zone IDs." << endl;
@@ -501,7 +497,7 @@ void AdjMatrixGraph::blockRoute(int from, int to) {
 		<< " has been blocked in matrix." << endl;
 }
 
-// O(V^2) — displays the entire adjacency matrix
+// O(V^2) - displays the entire adjacency matrix
 void AdjMatrixGraph::show() {
 	cout << "Adjacency Matrix Graph (G2):" << endl;
 	cout << "     ";

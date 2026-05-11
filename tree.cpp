@@ -1,6 +1,4 @@
 #include "tree.h"
-#include <cstring>
-
 // ============================
 // TreeNode
 // ============================
@@ -446,7 +444,7 @@ void IncidentTree::buildDefault() {
 	insert(6, "Animal-Movement-6", 0.3f);
 	insert(9, "Intruder-Zone-9", 0.9f);
 	cout << "Default incident tree built." << endl;
-    cout << endl;
+	cout << endl;
 }
 
 // O(1) - check if value crosses threshold and classify
@@ -457,7 +455,7 @@ void IncidentTree::classify(float value, float threshold) {
 	else {
 		cout << "Value " << value << " is below threshold " << threshold << " -> No incident." << endl;
 	}
-    cout << endl;
+	cout << endl;
 }
 
 void IncidentTree::clearHelper(TreeNode* node) {

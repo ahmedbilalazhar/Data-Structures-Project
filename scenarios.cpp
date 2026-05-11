@@ -17,7 +17,7 @@ void ScenarioRunner::runCascadingFire() {
 	stream.add(75.0f, 85.0f, 15.0f);
 	stream.add(65.0f, 78.0f, 18.0f);
 	stream.add(55.0f, 60.0f, 25.0f);
-	stream.checkAnomalies(25.0f, 0.0f, 60.0f);
+	stream.checkAnomalies(45.0f, 70.0f, 20.0f);
 
 	SinglyList rawEvents;
 	rawEvents.insert(75.0f, 1, 3);
@@ -96,7 +96,7 @@ void ScenarioRunner::runSensorFailure() {
 	stream.add(27.0f, 6.0f, 58.0f);
 	cout << "Raw sensor stream before validation:" << endl;
 	stream.show();
-	stream.checkAnomalies(25.0f, 0.0f, 60.0f);
+	stream.checkAnomalies(45.0f, 70.0f, 20.0f);
 
 	ForestGrid grid;
 	grid.setCell(1, 1, 25.0f, 5.0f);

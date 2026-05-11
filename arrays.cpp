@@ -72,7 +72,7 @@ void Baseline::show() {
 	for (int i = 0; i < 10; i++) {
 		cout << i << "     " << temp[i] << "    " << humidity[i] << "        " << smoke[i] << endl;
 	}
-    cout << endl;
+	cout << endl;
 }
 
 // SensorStream - A2: Dynamic Sensor Stream Array (1D)
@@ -97,7 +97,7 @@ void SensorStream::add(float t, float s, float h) {
 		humid[total] = h;
 		total = total + 1;
 		cout << "Reading added. Total: " << total << endl;
-        cout << endl;
+		cout << endl;
 	}
 	else {
 		cout << "Stream full. Cannot add more readings." << endl;
@@ -148,7 +148,7 @@ void SensorStream::show() {
 	for (int i = 0; i < total; i++) {
 		cout << i << "      " << temp[i] << "     " << smoke[i] << "    " << humid[i] << endl;
 	}
-    cout << endl;
+	cout << endl;
 }
 
 // ForestGrid - A3: Static Forest Grid Matrix (2D)
@@ -227,11 +227,11 @@ void ForestGrid::interpolate(int r, int c) {
 	if (count > 0) {
 		temp[r][c] = sum / count;
 		cout << "Interpolated value at (" << r << "," << c << "): " << temp[r][c] << " C" << endl;
-        cout << endl;
+		cout << endl;
 	}
 	else {
 		cout << "No valid neighbors for interpolation." << endl;
-        cout << endl;
+		cout << endl;
 	}
 }
 
@@ -273,7 +273,7 @@ void ForestGrid::findBoundaries() {
 
 	if (found == false) {
 		cout << "No sharp boundaries found." << endl;
-        cout << endl;
+		cout << endl;
 	}
 }
 
@@ -295,7 +295,7 @@ void ForestGrid::show() {
 		}
 		cout << endl;
 	}
-    cout << endl;
+	cout << endl;
 }
 
 // Terrain - A4: Dynamic Terrain Expansion Matrix (2D)
@@ -322,7 +322,7 @@ void Terrain::update(int r, int c, float rk, float h, float sl) {
 		humidity[r][c] = h;
 		slope[r][c] = sl;
 		cout << "Terrain cell (" << r << "," << c << ") updated." << endl;
-        cout << endl;
+		cout << endl;
 	}
 	else {
 		cout << "Invalid terrain cell." << endl;
@@ -370,7 +370,7 @@ void Terrain::filterAnomalies() {
 
 	if (found == false) {
 		cout << "No anomalies detected in terrain." << endl;
-        cout << endl;
+		cout << endl;
 	}
 }
 
@@ -392,10 +392,12 @@ void Terrain::show() {
 		}
 		cout << endl;
 	}
-    cout << endl;
+	cout << endl;
 }
 
-// O(n) - check each reading against manual thresholds: temp>45, smoke>70, humid<20
+// O(n) - check each reading against caller-supplied thresholds
+// FIX: previously used hard-coded 45.0, 70.0, 20.0 — parameters were
+//      received but never used. Now uses baseTemp, baseSmoke, baseHumid.
 void SensorStream::checkAnomalies(float baseTemp, float baseSmoke, float baseHumid) {
 	if (total == 0) {
 		cout << "No sensor readings to check." << endl;
@@ -404,21 +406,21 @@ void SensorStream::checkAnomalies(float baseTemp, float baseSmoke, float baseHum
 	bool found = false;
 	cout << "Anomaly Check Results:" << endl;
 	for (int i = 0; i < total; i++) {
-		if (temp[i] > 45.0) {
+		if (temp[i] > baseTemp) {
 			cout << "Index " << i << " FIRE RISK - Temp: " << temp[i] << " C" << endl;
 			found = true;
 		}
-		if (smoke[i] > 70.0) {
+		if (smoke[i] > baseSmoke) {
 			cout << "Index " << i << " SMOKE ALERT - Smoke: " << smoke[i] << endl;
 			found = true;
 		}
-		if (humid[i] < 20.0) {
+		if (humid[i] < baseHumid) {
 			cout << "Index " << i << " DRY CONDITION - Humidity: " << humid[i] << "%" << endl;
 			found = true;
 		}
 	}
 	if (found == false) {
 		cout << "All readings are within safe limits." << endl;
-        cout << endl;
+		cout << endl;
 	}
 }
